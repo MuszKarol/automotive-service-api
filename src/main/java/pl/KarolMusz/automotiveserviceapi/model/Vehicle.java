@@ -1,10 +1,7 @@
 package pl.KarolMusz.automotiveserviceapi.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,9 +9,10 @@ import javax.persistence.ManyToOne;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "car")
+@Entity(name = "vehicle")
 public class Vehicle extends BasicEntity {
 
     @Column(nullable = false)

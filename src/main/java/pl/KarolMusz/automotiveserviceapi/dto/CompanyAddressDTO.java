@@ -1,6 +1,6 @@
 package pl.KarolMusz.automotiveserviceapi.dto;
 
-public class AutomotiveServiceAddressDTO {
+public class CompanyAddressDTO {
     public String buildingNumber;
     public String street;
     public String postalCode;

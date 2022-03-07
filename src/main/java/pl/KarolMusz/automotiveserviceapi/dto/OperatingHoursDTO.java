@@ -1,7 +1,8 @@
 package pl.KarolMusz.automotiveserviceapi.dto;
 
+
 public class OperatingHoursDTO {
-    String dayName;
-    String openingHour;
-    String closingHour;
+    public String dayName;
+    public String openingHour;
+    public String closingHour;
 }

@@ -2,11 +2,11 @@ package pl.KarolMusz.automotiveserviceapi.dto;
 
 import java.util.List;
 
-public class AutomotiveServiceDataRequestDTO {
-    public String automotiveServiceName;
+public class CompanyInformationsRequestDTO {
+    public String companyName;
     public String description;
     public String phoneNumber;
-    public List<String> listOfServices;
-    public AutomotiveServiceAddressDTO address;
+    public List<MechanicalServiceDTO> listOfMechanicalServices;
+    public CompanyAddressDTO address;
     public List<OperatingHoursDTO> listOfOperatingHours;
 }
