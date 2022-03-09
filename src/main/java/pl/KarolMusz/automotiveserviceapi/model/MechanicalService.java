@@ -16,5 +16,6 @@ public class MechanicalService extends BasicEntity {
 
     private String type;
     private float cost;
+    public String currency;
     private String description;
 }

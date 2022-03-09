@@ -51,12 +51,14 @@ public interface CompanyMapper {
 
     @Mapping(source = "serviceDTO.type",            target = "type")
     @Mapping(source = "serviceDTO.cost",            target = "cost")
+    @Mapping(source = "serviceDTO.currency",        target = "currency")
     @Mapping(source = "serviceDTO.description",     target = "description")
     MechanicalService mechanicalServiceDTOToMechanicalService(MechanicalServiceDTO serviceDTO);
 
 
     @Mapping(source = "service.type",               target = "type")
     @Mapping(source = "service.cost",               target = "cost")
+    @Mapping(source = "service.currency",           target = "currency")
     @Mapping(source = "service.description",        target = "description")
     MechanicalServiceDTO mechanicalServiceToMechanicalServiceDTO(MechanicalService service);
 }
