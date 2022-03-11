@@ -46,14 +46,16 @@ public interface CompanyMapper {
     @Mapping(source = "hoursDTO.dayName",           target = "dayName")
     @Mapping(source = "hoursDTO.openingHour",       target = "openingHour")
     @Mapping(source = "hoursDTO.closingHour",       target = "closingHour")
-    OperatingHours operatingHoursDTOToOperatingHours(OperatingHoursDTO hoursDTO);
+    @Mapping(source = "company",                    target = "company")
+    OperatingHours operatingHoursDTOToOperatingHours(OperatingHoursDTO hoursDTO, Company company);
 
 
     @Mapping(source = "serviceDTO.type",            target = "type")
     @Mapping(source = "serviceDTO.cost",            target = "cost")
     @Mapping(source = "serviceDTO.currency",        target = "currency")
     @Mapping(source = "serviceDTO.description",     target = "description")
-    MechanicalService mechanicalServiceDTOToMechanicalService(MechanicalServiceDTO serviceDTO);
+    @Mapping(source = "company",                    target = "company")
+    MechanicalService mechanicalServiceDTOToMechanicalService(MechanicalServiceDTO serviceDTO, Company company);
 
 
     @Mapping(source = "service.type",               target = "type")

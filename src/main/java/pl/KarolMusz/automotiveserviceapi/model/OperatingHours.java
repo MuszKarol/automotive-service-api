@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 @Getter
 @Setter
@@ -17,4 +18,7 @@ public class OperatingHours extends BasicEntity {
     private String dayName;
     private String openingHour;
     private String closingHour;
+
+    @ManyToOne
+    private Company company;
 }

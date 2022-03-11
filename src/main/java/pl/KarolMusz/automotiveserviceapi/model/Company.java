@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
 
 @Getter
 @Setter
@@ -25,12 +24,6 @@ public class Company extends BasicEntity {
 
     private String phoneNumber;
 
-    @OneToMany
-    private List<OperatingHours> operatingHoursPerWeek;
-
     @OneToOne
     private Address address;
-
-    @OneToMany
-    private List<MechanicalService> mechanicalServices;
 }

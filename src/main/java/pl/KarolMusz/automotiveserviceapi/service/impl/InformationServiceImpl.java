@@ -48,39 +48,39 @@ public class InformationServiceImpl implements InformationService {
     @Override
     public CompanyInformationsResponseDTO setCompanyInformations(CompanyInformationsRequestDTO requestDTO) {
         Address address = findOrCreateNewAddress(requestDTO.address);
-        List<OperatingHours> operatingHoursList = createOperatingHoursList(requestDTO.listOfOperatingHours);
-        List<MechanicalService> mechanicalServices = createMechanicalServices(requestDTO.listOfMechanicalServices);
-        Company company = createCompany(requestDTO, address, operatingHoursList, mechanicalServices);
 
+        Company company = createCompany(requestDTO, address);
         companyRepository.save(company);
 
-        return companyMapper.companyToCompanyDTO(company, requestDTO.listOfMechanicalServices, requestDTO.address,
-                requestDTO.listOfOperatingHours);
+        List<OperatingHours> operatingHoursList = createOperatingHoursList(requestDTO.listOfOperatingHours, company);
+        operatingHoursRepository.saveAll(operatingHoursList);
+
+        List<MechanicalService> mechanicalServices = createMechanicalServices(requestDTO.listOfMechanicalServices, company);
+        mechanicalServiceRepository.saveAll(mechanicalServices);
+
+        return companyMapper.companyToCompanyDTO(company, this.getMechanicalServicesDTO(company),
+                this.getCompanyAddressDTO(company), requestDTO.listOfOperatingHours);
     }
 
-    private Company createCompany(CompanyInformationsRequestDTO requestDTO, Address address,
-                                  List<OperatingHours> operatingHoursList, List<MechanicalService> mechanicalServices)
-    {
+    private Company createCompany(CompanyInformationsRequestDTO requestDTO, Address address) {
         return Company.builder()
                 .companyName(requestDTO.companyName)
                 .phoneNumber(requestDTO.phoneNumber)
                 .companyHistory(requestDTO.description)
                 .address(address)
-                .operatingHoursPerWeek(operatingHoursList)
-                .mechanicalServices(mechanicalServices)
                 .modificationTimestamp(new Timestamp(new Date(System.currentTimeMillis()).getTime()))
                 .build();
     }
 
-    private List<MechanicalService> createMechanicalServices(List<MechanicalServiceDTO> mechanicalServices) {
+    private List<MechanicalService> createMechanicalServices(List<MechanicalServiceDTO> mechanicalServices, Company company) {
         return mechanicalServiceRepository.saveAll(mechanicalServices.stream()
-                .map(companyMapper::mechanicalServiceDTOToMechanicalService)
+                .map(service -> companyMapper.mechanicalServiceDTOToMechanicalService(service, company))
                 .toList());
     }
 
-    private List<OperatingHours> createOperatingHoursList(List<OperatingHoursDTO> listOfOperatingHours) {
+    private List<OperatingHours> createOperatingHoursList(List<OperatingHoursDTO> listOfOperatingHours, Company company) {
         return operatingHoursRepository.saveAll(listOfOperatingHours.stream()
-                .map(companyMapper::operatingHoursDTOToOperatingHours)
+                .map(operatingHours -> companyMapper.operatingHoursDTOToOperatingHours(operatingHours, company))
                 .toList());
     }
 
@@ -103,13 +103,13 @@ public class InformationServiceImpl implements InformationService {
     }
 
     private List<MechanicalServiceDTO> getMechanicalServicesDTO(Company company) {
-        return company.getMechanicalServices().stream()
+        return mechanicalServiceRepository.getAllByCompany(company).stream()
                 .map(companyMapper::mechanicalServiceToMechanicalServiceDTO)
                 .toList();
     }
 
     private List<OperatingHoursDTO> getOperatingHoursDTOS(Company company) {
-        return company.getOperatingHoursPerWeek().stream()
+        return operatingHoursRepository.getAllByCompany(company).stream()
                 .map(companyMapper::operatingHoursToOperatingHoursDTO)
                 .toList();
     }

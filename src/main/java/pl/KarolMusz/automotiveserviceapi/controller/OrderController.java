@@ -1,4 +1,4 @@
 package pl.KarolMusz.automotiveserviceapi.controller;
 
-public class ShoppingListController {
+public class OrderController {
 }

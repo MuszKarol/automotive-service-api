@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 @Getter
 @Setter
@@ -18,4 +19,7 @@ public class MechanicalService extends BasicEntity {
     private float cost;
     public String currency;
     private String description;
+
+    @ManyToOne
+    private Company company;
 }

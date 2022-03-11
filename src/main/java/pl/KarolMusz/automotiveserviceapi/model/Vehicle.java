@@ -3,9 +3,7 @@ package pl.KarolMusz.automotiveserviceapi.model;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -17,15 +15,9 @@ public class Vehicle extends BasicEntity {
 
     @Column(nullable = false)
     private String vehicleType = "car";
-
     private String version;
-
-    @Column(nullable = false)
     private String engineType;
-
-    @Column(nullable = false)
     private String engineCapacity;
-
     private String enginePower;
 
     @ManyToOne
