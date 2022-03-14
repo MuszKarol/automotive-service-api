@@ -1,9 +1,6 @@
 package pl.KarolMusz.automotiveserviceapi.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import pl.KarolMusz.automotiveserviceapi.model.enums.OrderStatus;
 
 import javax.persistence.*;
@@ -11,6 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "order_table")

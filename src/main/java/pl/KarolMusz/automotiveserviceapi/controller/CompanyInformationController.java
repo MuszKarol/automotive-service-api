@@ -16,7 +16,6 @@ public class CompanyInformationController {
 
     @GetMapping
     public ResponseEntity<CompanyInformationsResponseDTO> getAutomotiveServiceInformations() {
-
         try {
             return ResponseEntity.ok().body(informationsService.getCompanyInformations());
         } catch (Exception e) {
