@@ -13,5 +13,4 @@ public interface AddressRepository extends JpaRepository<Address, UUID> {
                                                                                         String city,
                                                                                         String postalCode,
                                                                                         String country);
-
 }

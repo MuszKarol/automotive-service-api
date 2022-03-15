@@ -3,10 +3,7 @@ package pl.KarolMusz.automotiveserviceapi.model;
 import lombok.*;
 import pl.KarolMusz.automotiveserviceapi.model.enums.ServiceStatus;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.sql.Date;
 
 @Getter
@@ -30,6 +27,7 @@ public class Visit extends BasicEntity{
     @OneToOne
     private User client;
 
+    @JoinColumn(nullable = true)
     @OneToOne
     private User mechanic;
 

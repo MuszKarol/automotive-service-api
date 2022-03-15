@@ -50,7 +50,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO createNewOrder(OrderDTO orderDTO) throws Exception {
-
         List<Part> parts = orderDTO.parts.stream().map(orderMapper::partDtoToPart).toList();
         partRepository.saveAll(parts);
 
