@@ -10,6 +10,5 @@ public class VisitRequestDTO {
     public Date expectedEndServiceDate;
     public String clientEmail;
     public String mechanicEmail;
-    public String carModel;
-    public String carVersion;
+    public String vinCode;
 }

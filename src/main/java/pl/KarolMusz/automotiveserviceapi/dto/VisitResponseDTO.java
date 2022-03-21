@@ -13,5 +13,4 @@ public class VisitResponseDTO {
     public String clientEmail;
     public String mechanicEmail;
     public String carModel;
-    public String carVersion;
 }

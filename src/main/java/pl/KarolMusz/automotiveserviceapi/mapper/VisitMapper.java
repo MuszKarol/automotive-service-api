@@ -16,8 +16,7 @@ public interface VisitMapper {
     @Mapping(source = "visit.expectedEndServiceDate",       target = "expectedEndServiceDate")
     @Mapping(source = "visit.client.email",                 target = "clientEmail")
     @Mapping(source = "visit.mechanic.email",               target = "mechanicEmail")
-    @Mapping(source = "visit.vehicle.model.name",           target = "carModel")
-    @Mapping(source = "visit.vehicle.version",              target = "carVersion")
+    @Mapping(source = "visit.car.model.name",               target = "carModel")
     VisitResponseDTO visitToVisitResponseDTO(Visit visit);
 
 }

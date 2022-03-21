@@ -11,6 +11,7 @@ import pl.KarolMusz.automotiveserviceapi.service.BookingService;
 import java.util.List;
 import java.util.UUID;
 
+
 @AllArgsConstructor
 @RequestMapping("/booking")
 @RestController
@@ -34,7 +35,7 @@ public class BookingController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<VisitResponseDTO> bookNewVisit(VisitRequestDTO visitRequestDTO) {
+    public ResponseEntity<VisitResponseDTO> bookNewVisit(@RequestBody VisitRequestDTO visitRequestDTO) {
         try {
             return ResponseEntity.ok().body(bookingService.createNewVisit(visitRequestDTO));
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public class BookingController {
     }
 
     @PatchMapping
-    public ResponseEntity<VisitResponseDTO> changeVisitStatus(VisitPatchRequestDTO visitPatchRequestDTO) {
+    public ResponseEntity<VisitResponseDTO> changeVisitStatus(@RequestBody VisitPatchRequestDTO visitPatchRequestDTO) {
         try {
             return ResponseEntity.ok().body(bookingService.updateVisitStatus(visitPatchRequestDTO));
         } catch (Exception e) {

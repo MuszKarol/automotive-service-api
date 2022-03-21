@@ -1,10 +1,8 @@
 package pl.KarolMusz.automotiveserviceapi.dto;
 
 import java.util.List;
-import java.util.UUID;
 
-public class UserDTO {
-    public UUID userId;
+public class UserCreateRequestDTO {
     public String email;
     public String name;
     public String surname;

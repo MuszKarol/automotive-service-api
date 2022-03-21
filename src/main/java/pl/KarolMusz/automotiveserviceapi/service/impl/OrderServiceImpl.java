@@ -2,6 +2,7 @@ package pl.KarolMusz.automotiveserviceapi.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.KarolMusz.automotiveserviceapi.dto.OrderCreateRequestDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.OrderDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.OrderStatusDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.PartDTO;
@@ -49,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO createNewOrder(OrderDTO orderDTO) throws Exception {
+    public OrderDTO createNewOrder(OrderCreateRequestDTO orderDTO) throws Exception {
         List<Part> parts = orderDTO.parts.stream().map(orderMapper::partDtoToPart).toList();
         partRepository.saveAll(parts);
 

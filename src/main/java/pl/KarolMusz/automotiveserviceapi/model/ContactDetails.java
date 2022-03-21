@@ -1,15 +1,13 @@
 package pl.KarolMusz.automotiveserviceapi.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -19,4 +17,9 @@ public class ContactDetails extends BasicEntity {
     private String phoneNumber;
 
     private String secondEmail;
+
+    @Override
+    public String toString() {
+        return  phoneNumber + ' ' + secondEmail;
+    }
 }

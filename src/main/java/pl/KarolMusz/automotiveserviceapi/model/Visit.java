@@ -32,5 +32,5 @@ public class Visit extends BasicEntity{
     private User mechanic;
 
     @OneToOne
-    private Vehicle vehicle;
+    private Car car;
 }

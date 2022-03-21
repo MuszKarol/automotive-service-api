@@ -7,11 +7,11 @@ import pl.KarolMusz.automotiveserviceapi.dto.VisitRequestDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.VisitResponseDTO;
 import pl.KarolMusz.automotiveserviceapi.mapper.VisitMapper;
 import pl.KarolMusz.automotiveserviceapi.model.User;
-import pl.KarolMusz.automotiveserviceapi.model.Vehicle;
+import pl.KarolMusz.automotiveserviceapi.model.Car;
 import pl.KarolMusz.automotiveserviceapi.model.Visit;
 import pl.KarolMusz.automotiveserviceapi.model.enums.ServiceStatus;
 import pl.KarolMusz.automotiveserviceapi.repository.UserRepository;
-import pl.KarolMusz.automotiveserviceapi.repository.VehicleRepository;
+import pl.KarolMusz.automotiveserviceapi.repository.CarRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.VisitRepository;
 import pl.KarolMusz.automotiveserviceapi.service.BookingService;
 
@@ -26,7 +26,7 @@ public class BookingServiceImpl implements BookingService {
 
     private final UserRepository userRepository;
     private final VisitRepository visitRepository;
-    private final VehicleRepository vehicleRepository;
+    private final CarRepository carRepository;
     private final VisitMapper visitMapper;
 
     @Override
@@ -56,16 +56,15 @@ public class BookingServiceImpl implements BookingService {
         if (mechanicOptional.isEmpty() || clientOptional.isEmpty())
             throw new Exception();  //TODO
 
-        Optional<Vehicle> vehicleOptional = vehicleRepository.getVehicleByModelAndVersion(visitRequestDTO.carModel,
-                visitRequestDTO.carVersion);
+        Optional<Car> carOptional = carRepository.getCarByVinCode(visitRequestDTO.vinCode);
 
-        if (vehicleOptional.isEmpty())
+        if (carOptional.isEmpty())
             throw new Exception();  //TODO
 
         Visit visit = Visit.builder()
                 .client(clientOptional.get())
                 .mechanic(mechanicOptional.get()) /*TODO*/
-                .vehicle(vehicleOptional.get())
+                .car(carOptional.get())
                 .bookingDate(visitRequestDTO.bookingDate)
                 .acceptationDate(visitRequestDTO.acceptationDate)
                 .expectedStartServiceDate(visitRequestDTO.expectedStartServiceDate)

@@ -3,6 +3,7 @@ package pl.KarolMusz.automotiveserviceapi.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.KarolMusz.automotiveserviceapi.dto.OrderCreateRequestDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.OrderDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.OrderStatusDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.PartDTO;
@@ -34,7 +35,7 @@ public class OrderController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<OrderDTO> createNewOrder(@RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<OrderDTO> createNewOrder(@RequestBody OrderCreateRequestDTO orderDTO) {
         try {
             return ResponseEntity.ok().body(orderService.createNewOrder(orderDTO));
         } catch (Exception e) {
