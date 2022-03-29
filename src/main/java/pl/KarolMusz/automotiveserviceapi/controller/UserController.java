@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserDTO> createNewUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUserDetails(@RequestBody UserDTO userDTO) {
         try {
             return ResponseEntity.ok().body(userService.updateUserDetails(userDTO));
         } catch (Exception e) {

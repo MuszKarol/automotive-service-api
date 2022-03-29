@@ -4,4 +4,5 @@ public class PartDTO {
     public String code;
     public String name;
     public String price;
+    public Integer quantity;
 }

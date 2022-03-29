@@ -9,10 +9,12 @@ import pl.KarolMusz.automotiveserviceapi.dto.PartDTO;
 import pl.KarolMusz.automotiveserviceapi.mapper.OrderMapper;
 import pl.KarolMusz.automotiveserviceapi.model.Order;
 import pl.KarolMusz.automotiveserviceapi.model.Part;
+import pl.KarolMusz.automotiveserviceapi.model.Quantity;
 import pl.KarolMusz.automotiveserviceapi.model.User;
 import pl.KarolMusz.automotiveserviceapi.model.enums.OrderStatus;
 import pl.KarolMusz.automotiveserviceapi.repository.OrderRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.PartRepository;
+import pl.KarolMusz.automotiveserviceapi.repository.QuantityRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.UserRepository;
 import pl.KarolMusz.automotiveserviceapi.service.OrderService;
 
@@ -25,6 +27,7 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final QuantityRepository quantityRepository;
     private final PartRepository partRepository;
     private final UserRepository userRepository;
     private final OrderMapper orderMapper;
@@ -33,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDTO> findAllUnfinishedOrders() {
         List<Order> orders =  orderRepository.findAllByStatus(OrderStatus.APPROVED);
         orders.addAll(orderRepository.findAllByStatus(OrderStatus.UNAPPROVED));
+        orders.addAll(orderRepository.findAllByStatus(OrderStatus.NEW));
 
         return orders.stream()
                 .map(this::mapToOrderDTO)
@@ -51,8 +55,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO createNewOrder(OrderCreateRequestDTO orderDTO) throws Exception {
-        List<Part> parts = orderDTO.parts.stream().map(orderMapper::partDtoToPart).toList();
-        partRepository.saveAll(parts);
+        List<Quantity> quantityListWithParts = quantityRepository.saveAll(
+                orderDTO.parts.stream()
+                        .map(this::mapPartDtoToQuantity)
+                        .toList()
+        );
 
         Optional<User> userOptional = userRepository.getUserByEmail(orderDTO.userEmail); //TODO
 
@@ -62,41 +69,51 @@ public class OrderServiceImpl implements OrderService {
         Order order = Order.builder()
                 .status(OrderStatus.valueOf(orderDTO.status))
                 .creator(userOptional.get())
-                .parts(parts)
+                .numberOfPartsList(quantityListWithParts)
                 .build();
 
-        orderRepository.save(order);
-
-        return mapToOrderDTO(order);
+        return mapToOrderDTO(orderRepository.save(order));
     }
 
     @Override
     public OrderDTO addPartToOrder(UUID id, PartDTO partDTO) throws Exception {
         Order order = getOrderByUUID(id);
+        Quantity quantity;
 
-        Part newPart = orderMapper.partDtoToPart(partDTO);
+        Optional<Part> partOptional = partRepository.getPartByCode(partDTO.code);
 
-        List<Part> parts = order.getParts();
-        parts.add(newPart);
+        if (partOptional.isEmpty()) {
+            Part part = orderMapper.partDtoToPart(partDTO);
+            quantity = orderMapper.partDtoToQuantity(partDTO, partRepository.save(part));
+            quantityRepository.save(quantity);
+        }
+        else {
+            order.getNumberOfPartsList().stream()
+                    .filter(quantity1 -> quantity1.getPart().getCode().equals(partDTO.code))
+                    .findFirst()
+                    .ifPresent(quantity2 -> quantity2.setNumber(quantity2.getNumber() + partDTO.quantity));
 
-        order.setParts(parts);
-        orderRepository.save(order);
+            return mapToOrderDTO(order);
+        }
 
-        return mapToOrderDTO(order);
+        List<Quantity> numberOfPartsList = order.getNumberOfPartsList();
+        numberOfPartsList.add(quantity);
+        order.setNumberOfPartsList(numberOfPartsList);
+
+        return mapToOrderDTO(orderRepository.save(order));
     }
 
     @Override
     public OrderDTO removePartFromOrder(UUID orderId, UUID partId) throws Exception {
         Order order = getOrderByUUID(orderId);
 
-        List<Part> parts = order.getParts().stream()
-                .filter(part -> !part.getId().equals(partId))
+        List<Quantity> parts = order.getNumberOfPartsList().stream()
+                .filter(quantity -> !quantity.getPart().getId().equals(partId))
                 .toList();
 
-        order.setParts(parts);
-        orderRepository.save(order);
+        order.setNumberOfPartsList(parts);
 
-        return mapToOrderDTO(order);
+        return mapToOrderDTO(orderRepository.save(order));
     }
 
     private Order getOrderByUUID(UUID id) throws Exception {
@@ -108,13 +125,34 @@ public class OrderServiceImpl implements OrderService {
         return orderOptional.get();
     }
 
-    private List<PartDTO> mapToPartDTOList(List<Part> parts) {
-        return parts.stream()
-                .map(orderMapper::partToPartDTO)
+    private List<PartDTO> mapToQuantityList(List<Quantity> quantities) {
+        return quantities.stream()
+                .map(orderMapper::quantityToPartDTO)
                 .toList();
     }
 
     private OrderDTO mapToOrderDTO(Order order) {
-        return orderMapper.orderToOrderDTO(order, mapToPartDTOList(order.getParts()));
+        return orderMapper.orderToOrderDTO(order, mapToQuantityList(order.getNumberOfPartsList()));
+    }
+
+    private Quantity mapPartDtoToQuantity(PartDTO partDTO) {
+        return orderMapper.partDtoToQuantity(partDTO, createNewPart(partDTO));
+    }
+
+    private Part createNewPart(PartDTO partDTO) {
+        Optional<Part> partOptional = partRepository.getPartByCode(partDTO.code);
+        Part part;
+
+        if (partOptional.isPresent()) {
+            part = partOptional.get();
+            part.setPrice(partDTO.price);
+            part.setName(partDTO.name);
+            partRepository.save(part);
+        }
+        else {
+             part = partRepository.save(orderMapper.partDtoToPart(partDTO));
+        }
+
+        return part;
     }
 }

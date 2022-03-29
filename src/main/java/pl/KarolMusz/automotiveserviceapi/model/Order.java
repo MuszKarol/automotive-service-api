@@ -20,6 +20,15 @@ public class Order extends BasicEntity {
     @OneToOne
     private User creator;
 
+//    @OneToMany
+//    private List<Part> parts;
+
     @OneToMany
-    private List<Part> parts;
+    private List<Quantity> numberOfPartsList;
+
+//    @ElementCollection
+//    @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
+//    @Column(name = "amount")
+//    @MapKeyJoinColumn(name = "part_FK")
+//    Map<Part, Integer> listOfPart;
 }

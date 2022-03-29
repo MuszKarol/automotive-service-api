@@ -1,5 +1,6 @@
 package pl.KarolMusz.automotiveserviceapi.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import pl.KarolMusz.automotiveserviceapi.model.enums.ServiceStatus;
 

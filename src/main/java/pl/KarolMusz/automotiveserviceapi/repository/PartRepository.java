@@ -4,8 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import pl.KarolMusz.automotiveserviceapi.model.Part;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface PartRepository extends JpaRepository<Part, UUID> {
+    Optional<Part> getPartByCode(String code);
 }
