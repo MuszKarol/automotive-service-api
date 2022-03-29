@@ -2,10 +2,7 @@ package pl.KarolMusz.automotiveserviceapi.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.KarolMusz.automotiveserviceapi.dto.OrderCreateRequestDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.OrderDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.OrderStatusDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.PartDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.*;
 import pl.KarolMusz.automotiveserviceapi.mapper.OrderMapper;
 import pl.KarolMusz.automotiveserviceapi.model.Order;
 import pl.KarolMusz.automotiveserviceapi.model.Part;
@@ -83,8 +80,10 @@ public class OrderServiceImpl implements OrderService {
         Optional<Part> partOptional = partRepository.getPartByCode(partDTO.code);
 
         if (partOptional.isEmpty()) {
-            Part part = orderMapper.partDtoToPart(partDTO);
-            quantity = orderMapper.partDtoToQuantity(partDTO, partRepository.save(part));
+            quantity = orderMapper.partDtoToQuantity(partDTO,
+                    partRepository.save(orderMapper.partDtoToPart(partDTO))
+            );
+
             quantityRepository.save(quantity);
         }
         else {
@@ -107,11 +106,16 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO removePartFromOrder(UUID orderId, UUID partId) throws Exception {
         Order order = getOrderByUUID(orderId);
 
-        List<Quantity> parts = order.getNumberOfPartsList().stream()
-                .filter(quantity -> !quantity.getPart().getId().equals(partId))
-                .toList();
+        Optional<Quantity> quantityToRemoveOptional = order.getNumberOfPartsList().stream()
+                .filter(quantity -> quantity.getPart().getId().equals(partId))
+                .findFirst();
 
-        order.setNumberOfPartsList(parts);
+        if (quantityToRemoveOptional.isEmpty())
+            throw new Exception();      //TODO
+
+        List<Quantity> numberOfPartsList = order.getNumberOfPartsList();
+        numberOfPartsList.remove(quantityToRemoveOptional.get());
+        order.setNumberOfPartsList(numberOfPartsList);
 
         return mapToOrderDTO(orderRepository.save(order));
     }
@@ -125,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
         return orderOptional.get();
     }
 
-    private List<PartDTO> mapToQuantityList(List<Quantity> quantities) {
+    private List<PartResponseDTO> mapToQuantityList(List<Quantity> quantities) {
         return quantities.stream()
                 .map(orderMapper::quantityToPartDTO)
                 .toList();

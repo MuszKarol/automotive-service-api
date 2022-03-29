@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import pl.KarolMusz.automotiveserviceapi.dto.OrderDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.PartDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.PartResponseDTO;
 import pl.KarolMusz.automotiveserviceapi.model.Order;
 import pl.KarolMusz.automotiveserviceapi.model.Part;
 import pl.KarolMusz.automotiveserviceapi.model.Quantity;
@@ -17,13 +18,14 @@ public interface OrderMapper {
     @Mapping(source = "order.status",               target = "status")
     @Mapping(source = "order.creator.email",        target = "userEmail")
     @Mapping(source = "partDTOList",                target = "parts")
-    OrderDTO orderToOrderDTO(Order order, List<PartDTO> partDTOList);
+    OrderDTO orderToOrderDTO(Order order, List<PartResponseDTO> partDTOList);
 
+    @Mapping(source = "quantity.part.id",           target = "partId")
     @Mapping(source = "quantity.part.code",         target = "code")
     @Mapping(source = "quantity.part.name",         target = "name")
     @Mapping(source = "quantity.part.price",        target = "price")
     @Mapping(source = "quantity.number",            target = "quantity")
-    PartDTO quantityToPartDTO(Quantity quantity);
+    PartResponseDTO quantityToPartDTO(Quantity quantity);
 
     @Mapping(source = "partDTO.code",               target = "code")
     @Mapping(source = "partDTO.name",               target = "name")

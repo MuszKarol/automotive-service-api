@@ -7,5 +7,5 @@ public class OrderDTO {
     public UUID orderId;
     public String status;
     public String userEmail;
-    public List<PartDTO> parts;
+    public List<PartResponseDTO> parts;
 }
