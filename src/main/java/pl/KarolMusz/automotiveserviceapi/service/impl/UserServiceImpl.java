@@ -23,7 +23,6 @@ public class UserServiceImpl implements UserService {
     private final ContactDetailsRepository contactDetailsRepository;
     private final CarRepository carRepository;
     private final ModelRepository modelRepository;
-    private final BrandRepository brandRepository;
     private final UserMapper userMapper;
     private final CarMapper carMapper;
 
@@ -53,6 +52,7 @@ public class UserServiceImpl implements UserService {
             throw new Exception();
 
         List<Car> cars = getCars(userDTO);
+        carRepository.saveAll(cars);
 
         User user = User.builder()
                 .email(userDTO.email)
@@ -90,36 +90,47 @@ public class UserServiceImpl implements UserService {
     public UserDTO addUserVehicle(UUID userId, CarDTO carDTO) throws Exception {
         Optional<User> userOptional = userRepository.findById(userId);
 
-        if (userOptional.isEmpty())
+        if (userOptional.isEmpty()) {
             throw new Exception();  //TODO
+        }
 
         User user = userOptional.get();
 
+        if(carRepository.getCarByVinCode(carDTO.vinCode).isPresent()) {
+            throw new Exception();
+        }
+
         Optional<Car> carOptional = getCar(carDTO);
 
-        if (carOptional.isEmpty())
+        if (carOptional.isEmpty()){
             throw new Exception(); //TODO
+        }
 
-        user.getListOfCars().add(carOptional.get());
+        user.getListOfCars().add(carRepository.save(carOptional.get()));
 
         return getUserDTO(userRepository.save(user));
     }
 
     @Override
-    public UserDTO deleteUserVehicle(UUID userId, UUID carId) throws Exception {
-        Optional<Car> carOptional = carRepository.findById(carId);
+    public UserDTO deleteUserVehicle(UUID userId, String vin) throws Exception {
+        Optional<Car> carOptional = carRepository.getCarByVinCode(vin);
 
         if (carOptional.isEmpty())
             throw new Exception();  //TODO
-
-        carRepository.delete(carOptional.get());
 
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isEmpty())
             throw new Exception();  //TODO
 
-        return getUserDTO(userOptional.get());
+        User user = userOptional.get();
+        Car car = carOptional.get();
+
+        user.getListOfCars().remove(carOptional.get());
+        userRepository.save(user);
+        carRepository.delete(car);
+
+        return getUserDTO(user);
     }
 
     private Address getAddress(AddressDTO addressDTO) {
@@ -174,31 +185,36 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
-    //TODO
     private Optional<Car> getCar(CarDTO carDTO) {
-        Optional<Car> carOptional = Optional.empty();
+        Optional<Car> carOptional;
+        Optional<Model> modelOptional = modelRepository.getModelByBrandNameAndModelName(carDTO.brandName, carDTO.modelName);
 
-        Optional<Brand> brandOptional = brandRepository.getBrandByName(carDTO.brandName);
+        Model model;
 
-        if (brandOptional.isEmpty())
-            return carOptional;
+        if (modelOptional.isEmpty()) {
+            model = Model.builder()
+                    .brandName(carDTO.brandName)
+                    .modelName(carDTO.modelName)
+                    .build();
 
-        Optional<Model> modelOptional = modelRepository.getModelByNameAndBrand(carDTO.modelName, brandOptional.get());
+            modelRepository.save(model);
+        }
+        else {
+            model = modelOptional.get();
+        }
 
-        if (modelOptional.isEmpty())
-            return carOptional;
-
-        carOptional = carRepository.getCarByVinCodeAndModel(carDTO.vinCode, modelOptional.get());
+        carOptional = carRepository.getCarByVinCodeAndModel(carDTO.vinCode, model);
 
         if (carOptional.isEmpty()) {
             Car car = Car.builder()
-                    .model(modelOptional.get())
+                    .model(model)
                     .licensePlate(carDTO.licensePlate)
                     .vinCode(carDTO.vinCode)
                     .build();
 
             carOptional = Optional.of(car);
         }
+
         return carOptional;
     }
 

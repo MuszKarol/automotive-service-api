@@ -10,7 +10,7 @@ public interface CarMapper {
 
     @Mapping(source = "car.vinCode",            target = "vinCode")
     @Mapping(source = "car.licensePlate",       target = "licensePlate")
-    @Mapping(source = "car.model.name",         target = "modelName")
-    @Mapping(source = "car.model.brand.name",   target = "brandName")
+    @Mapping(source = "car.model.modelName",    target = "modelName")
+    @Mapping(source = "car.model.brandName",    target = "brandName")
     CarDTO carToCarDTO(Car car);
 }
