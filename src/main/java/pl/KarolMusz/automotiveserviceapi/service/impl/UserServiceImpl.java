@@ -10,6 +10,7 @@ import pl.KarolMusz.automotiveserviceapi.model.enums.Role;
 import pl.KarolMusz.automotiveserviceapi.repository.*;
 import pl.KarolMusz.automotiveserviceapi.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,9 +52,6 @@ public class UserServiceImpl implements UserService {
         if (userOptional.isPresent())
             throw new Exception();
 
-        List<Car> cars = getCars(userDTO);
-        carRepository.saveAll(cars);
-
         User user = User.builder()
                 .email(userDTO.email)
                 .name(userDTO.name)
@@ -61,7 +59,7 @@ public class UserServiceImpl implements UserService {
                 .role(Role.valueOf(userDTO.role))
                 .address(getAddress(userDTO.address))
                 .contactDetails(getContactDetails(userDTO.contactDetails))
-                .listOfCars(cars)
+                .listOfCars(new ArrayList<>())
                 .build();
 
         return getUserDTO(userRepository.save(user));
@@ -175,14 +173,6 @@ public class UserServiceImpl implements UserService {
                 userMapper.addressToAddressDTO(user.getAddress()),
                 userMapper.contactToContactDTO(user.getContactDetails()),
                 getCarDTOs(user));
-    }
-
-    private List<Car> getCars(UserCreateRequestDTO userDTO) {
-        return userDTO.carDTOList.stream()
-                .map(this::getCar)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
     }
 
     private Optional<Car> getCar(CarDTO carDTO) {

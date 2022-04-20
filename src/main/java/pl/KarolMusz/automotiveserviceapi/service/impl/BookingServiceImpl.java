@@ -41,10 +41,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<VisitResponseDTO> getAllVisitsWithStatusUncompleted() {
-        List<Visit> visits = visitRepository.getAllByServiceStatusAndServiceStatusAndServiceStatus(ServiceStatus.NEW,
-                ServiceStatus.ACTIVE, ServiceStatus.ACCEPTED);
+    public List<VisitResponseDTO> getAllVisitsWithStatusUnfinished() {
+        List<Visit> visits = visitRepository.getAllByServiceStatus(ServiceStatus.ACCEPTED);
+        visits.addAll(visitRepository.getAllByServiceStatus(ServiceStatus.ACTIVE));
+        return visits.stream().map(visitMapper::visitToVisitResponseDTO).toList();
+    }
 
+    @Override
+    public List<VisitResponseDTO> getAllVisitsWithStatusNew() {
+        List<Visit> visits = visitRepository.getAllByServiceStatus(ServiceStatus.NEW);
         return visits.stream().map(visitMapper::visitToVisitResponseDTO).toList();
     }
 

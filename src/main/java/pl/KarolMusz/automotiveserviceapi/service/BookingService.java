@@ -9,7 +9,8 @@ import java.util.UUID;
 
 public interface BookingService {
     VisitResponseDTO getVisitDetailsUsingId(UUID visitId) throws Exception;
-    List<VisitResponseDTO> getAllVisitsWithStatusUncompleted();
+    List<VisitResponseDTO> getAllVisitsWithStatusUnfinished();
+    List<VisitResponseDTO> getAllVisitsWithStatusNew();
     VisitResponseDTO createNewVisit(VisitRequestDTO visitRequestDTO) throws Exception;
     VisitResponseDTO updateVisitStatus(VisitPatchRequestDTO visitPatchRequestDTO) throws Exception;
 }

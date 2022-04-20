@@ -11,6 +11,7 @@ public class VisitResponseDTO {
     public Date expectedStartServiceDate;
     public Date expectedEndServiceDate;
     public String clientEmail;
+    public String serviceStatus;
     public String mechanicEmail;
     public String carModel;
 }

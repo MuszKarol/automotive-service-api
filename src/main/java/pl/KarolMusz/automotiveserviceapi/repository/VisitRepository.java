@@ -10,7 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface VisitRepository extends JpaRepository<Visit, UUID> {
-    List<Visit> getAllByServiceStatusAndServiceStatusAndServiceStatus(ServiceStatus serviceStatus,
-                                                                      ServiceStatus serviceStatus2,
-                                                                      ServiceStatus serviceStatus3);
+    List<Visit> getAllByServiceStatus(ServiceStatus serviceStatus);
 }

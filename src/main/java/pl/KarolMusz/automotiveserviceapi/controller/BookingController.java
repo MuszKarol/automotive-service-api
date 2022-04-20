@@ -29,9 +29,14 @@ public class BookingController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<VisitResponseDTO>> getALlUncompletedVisits() {
-        return ResponseEntity.ok().body(bookingService.getAllVisitsWithStatusUncompleted());
+    @GetMapping("/new")
+    public ResponseEntity<List<VisitResponseDTO>> getALlNewVisits() {
+        return ResponseEntity.ok().body(bookingService.getAllVisitsWithStatusNew());
+    }
+
+    @GetMapping("/accepted")
+    public ResponseEntity<List<VisitResponseDTO>> getAllAcceptedVisits() {
+        return ResponseEntity.ok().body(bookingService.getAllVisitsWithStatusUnfinished());
     }
 
     @PostMapping("/new")
