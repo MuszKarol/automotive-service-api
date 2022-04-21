@@ -31,14 +31,14 @@ public class InformationServiceImpl implements InformationService {
     private final CompanyMapper companyMapper;
 
     @Override
-    public CompanyInformationsResponseDTO getCompanyInformations() throws Exception {
+    public CompanyDetailsDTO getCompanyDetails() throws Exception {
         Optional<Company> companyOptional = companyRepository.getCompanyByLatestModificationTimestamp();
 
         if(companyOptional.isEmpty()) throw new Exception(); //TODO
 
         Company company = companyOptional.get();
 
-        CompanyAddressDTO companyAddressDTO = getCompanyAddressDTO(company);
+        AddressDTO companyAddressDTO = getCompanyAddressDTO(company);
         List<MechanicalServiceDTO> servicesList = getMechanicalServicesDTO(company);
         List<OperatingHoursDTO> operatingHoursDTOList = getOperatingHoursDTOS(company);
 
@@ -46,23 +46,23 @@ public class InformationServiceImpl implements InformationService {
     }
 
     @Override
-    public CompanyInformationsResponseDTO setCompanyInformations(CompanyInformationsRequestDTO requestDTO) {
-        Address address = findOrCreateNewAddress(requestDTO.address);
+    public CompanyDetailsDTO setCompanyDetails(CompanyDetailsDTO companyDetailsDTO) {
+        Address address = findOrCreateNewAddress(companyDetailsDTO.address);
 
-        Company company = createCompany(requestDTO, address);
+        Company company = createCompany(companyDetailsDTO, address);
         companyRepository.save(company);
 
-        List<OperatingHours> operatingHoursList = createOperatingHoursList(requestDTO.listOfOperatingHours, company);
+        List<OperatingHours> operatingHoursList = createOperatingHoursList(companyDetailsDTO.listOfOperatingHours, company);
         operatingHoursRepository.saveAll(operatingHoursList);
 
-        List<MechanicalService> mechanicalServices = createMechanicalServices(requestDTO.listOfMechanicalServices, company);
+        List<MechanicalService> mechanicalServices = createMechanicalServices(companyDetailsDTO.listOfMechanicalServices, company);
         mechanicalServiceRepository.saveAll(mechanicalServices);
 
         return companyMapper.companyToCompanyDTO(company, this.getMechanicalServicesDTO(company),
-                this.getCompanyAddressDTO(company), requestDTO.listOfOperatingHours);
+                this.getCompanyAddressDTO(company), companyDetailsDTO.listOfOperatingHours);
     }
 
-    private Company createCompany(CompanyInformationsRequestDTO requestDTO, Address address) {
+    private Company createCompany(CompanyDetailsDTO requestDTO, Address address) {
         return Company.builder()
                 .companyName(requestDTO.companyName)
                 .phoneNumber(requestDTO.phoneNumber)
@@ -84,7 +84,7 @@ public class InformationServiceImpl implements InformationService {
                 .toList());
     }
 
-    private Address findOrCreateNewAddress(CompanyAddressDTO addressDTO) {
+    private Address findOrCreateNewAddress(AddressDTO addressDTO) {
         Optional<Address> addressOptional = addressRepository.getAddressByBuildingNumberAndStreetAndCityAndPostalCodeAndCountry(
                 addressDTO.buildingNumber, addressDTO.street, addressDTO.city, addressDTO.postalCode, addressDTO.country);
 
@@ -98,7 +98,7 @@ public class InformationServiceImpl implements InformationService {
                 .build()));
     }
 
-    private CompanyAddressDTO getCompanyAddressDTO(Company company) {
+    private AddressDTO getCompanyAddressDTO(Company company) {
         return companyMapper.addressToCompanyAddressDTO(company.getAddress());
     }
 

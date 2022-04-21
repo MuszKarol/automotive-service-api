@@ -1,9 +1,6 @@
 package pl.KarolMusz.automotiveserviceapi.dto;
 
-import java.util.UUID;
-
-public class PartResponseDTO {
-    public UUID partId;
+public class CarPartDTO {
     public String code;
     public String name;
     public String price;

@@ -10,8 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface CarRepository extends JpaRepository<Car, UUID> {
-//    @Query(value = "SELECT c FROM car c WHERE c.model.name = :carModel AND c.VIN = :vinCode")
-//    Optional<Car> getCarByModelAndVinCode(@Param("carModel") String model, @Param("vinCode") String vinCode);
     Optional<Car> getCarByVinCode(String vinCode);
     Optional<Car> getCarByVinCodeAndModel(String vinCode, Model model);
 }

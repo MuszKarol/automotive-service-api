@@ -10,12 +10,13 @@ import javax.persistence.Entity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name="part")
-public class Part extends BasicEntity {
+@Entity
+public class CarPart extends BasicEntity {
 
     @Column(unique = true)
     private String code;
 
     private String name;
     private String price;
+    private Integer quantity;
 }

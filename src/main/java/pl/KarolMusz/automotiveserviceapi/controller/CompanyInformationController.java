@@ -3,8 +3,7 @@ package pl.KarolMusz.automotiveserviceapi.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.KarolMusz.automotiveserviceapi.dto.CompanyInformationsRequestDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.CompanyInformationsResponseDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.CompanyDetailsDTO;
 import pl.KarolMusz.automotiveserviceapi.service.InformationService;
 
 @AllArgsConstructor
@@ -12,12 +11,12 @@ import pl.KarolMusz.automotiveserviceapi.service.InformationService;
 @RequestMapping("/about")
 public class CompanyInformationController {
 
-    private final InformationService informationsService;
+    private final InformationService informationService;
 
     @GetMapping
-    public ResponseEntity<CompanyInformationsResponseDTO> getAutomotiveServiceInformations() {
+    public ResponseEntity<CompanyDetailsDTO> getAutomotiveServiceDetails() {
         try {
-            return ResponseEntity.ok().body(informationsService.getCompanyInformations());
+            return ResponseEntity.ok().body(informationService.getCompanyDetails());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();
@@ -25,8 +24,7 @@ public class CompanyInformationController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<CompanyInformationsResponseDTO> setAutomotiveServiceInformations(
-            @RequestBody CompanyInformationsRequestDTO companyInformationsRequestDTO) {
-        return ResponseEntity.ok().body(informationsService.setCompanyInformations(companyInformationsRequestDTO));
+    public ResponseEntity<CompanyDetailsDTO> setAutomotiveServiceDetails(@RequestBody CompanyDetailsDTO companyDetailsDTO) {
+        return ResponseEntity.ok().body(informationService.setCompanyDetails(companyDetailsDTO));
     }
 }

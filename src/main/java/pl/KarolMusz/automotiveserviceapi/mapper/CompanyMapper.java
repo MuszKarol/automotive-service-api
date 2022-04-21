@@ -2,8 +2,8 @@ package pl.KarolMusz.automotiveserviceapi.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import pl.KarolMusz.automotiveserviceapi.dto.CompanyAddressDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.CompanyInformationsResponseDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.AddressDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.CompanyDetailsDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.MechanicalServiceDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.OperatingHoursDTO;
 import pl.KarolMusz.automotiveserviceapi.model.Address;
@@ -16,17 +16,16 @@ import java.util.List;
 @Mapper
 public interface CompanyMapper {
 
-    @Mapping(source = "company.id",                 target = "id")
-    @Mapping(source = "company.companyName",        target = "automotiveServiceName")
+    @Mapping(source = "company.companyName",        target = "companyName")
     @Mapping(source = "company.companyHistory",     target = "description")
     @Mapping(source = "company.phoneNumber",        target = "phoneNumber")
     @Mapping(source = "mechanicalServiceDTOList",   target = "listOfMechanicalServices")
     @Mapping(source = "addressDTO",                 target = "address")
     @Mapping(source = "operatingHoursDTOList",      target = "listOfOperatingHours")
-    CompanyInformationsResponseDTO companyToCompanyDTO(Company company,
-                                                       List<MechanicalServiceDTO> mechanicalServiceDTOList,
-                                                       CompanyAddressDTO addressDTO,
-                                                       List<OperatingHoursDTO> operatingHoursDTOList);
+    CompanyDetailsDTO companyToCompanyDTO(Company company,
+                                          List<MechanicalServiceDTO> mechanicalServiceDTOList,
+                                          AddressDTO addressDTO,
+                                          List<OperatingHoursDTO> operatingHoursDTOList);
 
 
     @Mapping(source = "address.buildingNumber",     target = "buildingNumber")
@@ -34,7 +33,7 @@ public interface CompanyMapper {
     @Mapping(source = "address.postalCode",         target = "postalCode")
     @Mapping(source = "address.city",               target = "city")
     @Mapping(source = "address.country",            target = "country")
-    CompanyAddressDTO addressToCompanyAddressDTO(Address address);
+    AddressDTO addressToCompanyAddressDTO(Address address);
 
 
     @Mapping(source = "hours.dayName",              target = "dayName")

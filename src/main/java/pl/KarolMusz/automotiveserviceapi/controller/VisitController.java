@@ -9,7 +9,6 @@ import pl.KarolMusz.automotiveserviceapi.dto.VisitResponseDTO;
 import pl.KarolMusz.automotiveserviceapi.service.VisitService;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @AllArgsConstructor
@@ -18,16 +17,6 @@ import java.util.UUID;
 public class VisitController {
 
     private final VisitService bookingService;
-
-    @GetMapping("/{id}")
-    public ResponseEntity<VisitResponseDTO> getVisitDetails(@PathVariable UUID id) {
-        try {
-            return ResponseEntity.ok().body(bookingService.getVisitDetailsUsingId(id));
-        }
-        catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
     @GetMapping("/new")
     public ResponseEntity<List<VisitResponseDTO>> getALlNewVisits() {

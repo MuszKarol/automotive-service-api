@@ -1,9 +1,8 @@
 package pl.KarolMusz.automotiveserviceapi.service;
 
-import pl.KarolMusz.automotiveserviceapi.dto.CompanyInformationsRequestDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.CompanyInformationsResponseDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.CompanyDetailsDTO;
 
 public interface InformationService {
-    CompanyInformationsResponseDTO getCompanyInformations() throws Exception;
-    CompanyInformationsResponseDTO setCompanyInformations(CompanyInformationsRequestDTO companyInformationsRequestDTO);
+    CompanyDetailsDTO getCompanyDetails() throws Exception;
+    CompanyDetailsDTO setCompanyDetails(CompanyDetailsDTO companyDetailsDTO);
 }

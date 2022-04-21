@@ -3,66 +3,31 @@ package pl.KarolMusz.automotiveserviceapi.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.KarolMusz.automotiveserviceapi.dto.OrderCreateRequestDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.OrderDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.OrderStatusDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.PartDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.CarPartDTO;
 import pl.KarolMusz.automotiveserviceapi.service.OrderService;
 
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
-@RequestMapping("/orders")
+@RequestMapping("/order/parts")
 @RestController
 public class OrderController {
 
     private final OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> getAllOrders() {
-        return ResponseEntity.ok().body(orderService.findAllUnfinishedOrders());
+    public ResponseEntity<List<CarPartDTO>> getParts() {
+        return ResponseEntity.ok().body(orderService.getAllCarParts());
     }
 
-    @PatchMapping
-    public ResponseEntity<OrderDTO> changeOrderStatus(@RequestBody OrderStatusDTO orderStatusDTO) {
-        try {
-            return ResponseEntity.ok().body(orderService.setNewOrderStatus(orderStatusDTO));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+    @PostMapping
+    public ResponseEntity<CarPartDTO> savePart(@RequestBody CarPartDTO carPartDTO) {
+        return ResponseEntity.ok().body(orderService.saveCarPart(carPartDTO));
     }
 
-    @PostMapping("/new")
-    public ResponseEntity<OrderDTO> createNewOrder(@RequestBody OrderCreateRequestDTO orderDTO) {
-        try {
-            return ResponseEntity.ok().body(orderService.createNewOrder(orderDTO));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PostMapping("/{id}/products/new")
-    public ResponseEntity<OrderDTO> addNewProduct(@PathVariable("id") UUID orderId, @RequestBody PartDTO partDTO) {
-        try {
-            return ResponseEntity.ok().body(orderService.addPartToOrder(orderId, partDTO));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @DeleteMapping("/{order_id}/products/{product_id}")
-    public ResponseEntity<OrderDTO> removeProduct(@PathVariable("order_id") UUID orderId,
-                                        @PathVariable("product_id") UUID productId)
-    {
-        try {
-            return ResponseEntity.ok().body(orderService.removePartFromOrder(orderId, productId));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+    @DeleteMapping("/{partCode}")
+    public ResponseEntity deletePart(@PathVariable String partCode) {
+        orderService.deletePart(partCode);
+        return ResponseEntity.ok().build();
     }
 }
