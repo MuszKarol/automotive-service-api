@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class VisitRequestDTO {
     public String faultDetails;
-    public Date bookingDate;
+    public Date carDeliveryDate;
     public Date acceptationDate;
     public Date expectedStartServiceDate;
     public Date expectedEndServiceDate;

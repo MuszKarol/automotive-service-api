@@ -6,25 +6,25 @@ import org.springframework.web.bind.annotation.*;
 import pl.KarolMusz.automotiveserviceapi.dto.VisitPatchRequestDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.VisitRequestDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.VisitResponseDTO;
-import pl.KarolMusz.automotiveserviceapi.service.BookingService;
+import pl.KarolMusz.automotiveserviceapi.service.VisitService;
 
 import java.util.List;
 import java.util.UUID;
 
 
 @AllArgsConstructor
-@RequestMapping("/booking")
+@RequestMapping("/visits")
 @RestController
-public class BookingController {
+public class VisitController {
 
-    private final BookingService bookingService;
+    private final VisitService bookingService;
 
     @GetMapping("/{id}")
     public ResponseEntity<VisitResponseDTO> getVisitDetails(@PathVariable UUID id) {
         try {
             return ResponseEntity.ok().body(bookingService.getVisitDetailsUsingId(id));
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -44,7 +44,6 @@ public class BookingController {
         try {
             return ResponseEntity.ok().body(bookingService.createNewVisit(visitRequestDTO));
         } catch (Exception e) {
-            e.printStackTrace();
             return  ResponseEntity.badRequest().build();
         }
     }
@@ -54,7 +53,6 @@ public class BookingController {
         try {
             return ResponseEntity.ok().body(bookingService.updateVisitStatus(visitPatchRequestDTO));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }

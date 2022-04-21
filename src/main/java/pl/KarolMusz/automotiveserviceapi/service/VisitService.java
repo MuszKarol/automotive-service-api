@@ -7,7 +7,7 @@ import pl.KarolMusz.automotiveserviceapi.dto.VisitResponseDTO;
 import java.util.List;
 import java.util.UUID;
 
-public interface BookingService {
+public interface VisitService {
     VisitResponseDTO getVisitDetailsUsingId(UUID visitId) throws Exception;
     List<VisitResponseDTO> getAllVisitsWithStatusUnfinished();
     List<VisitResponseDTO> getAllVisitsWithStatusNew();

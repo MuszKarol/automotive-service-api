@@ -13,7 +13,7 @@ import pl.KarolMusz.automotiveserviceapi.model.enums.ServiceStatus;
 import pl.KarolMusz.automotiveserviceapi.repository.UserRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.CarRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.VisitRepository;
-import pl.KarolMusz.automotiveserviceapi.service.BookingService;
+import pl.KarolMusz.automotiveserviceapi.service.VisitService;
 
 import java.sql.Date;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Service
-public class BookingServiceImpl implements BookingService {
+public class VisitServiceImpl implements VisitService {
 
     private final UserRepository userRepository;
     private final VisitRepository visitRepository;
@@ -70,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
                 .client(clientOptional.get())
                 .mechanic(mechanicOptional.get()) /*TODO*/
                 .car(carOptional.get())
-                .bookingDate(visitRequestDTO.bookingDate)
+                .carDeliveryDate(visitRequestDTO.carDeliveryDate)
                 .acceptationDate(visitRequestDTO.acceptationDate)
                 .expectedStartServiceDate(visitRequestDTO.expectedStartServiceDate)
                 .expectedEndServiceDate(visitRequestDTO.expectedEndServiceDate)
@@ -83,15 +83,20 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public VisitResponseDTO updateVisitStatus(VisitPatchRequestDTO visitPatchRequestDTO) throws Exception {
-        Optional<Visit> visitOptional = visitRepository.findById(visitPatchRequestDTO.visitId);
+        Optional<Visit> visitOptional = visitRepository.findById(visitPatchRequestDTO.id);
 
         if (visitOptional.isEmpty())
             throw new Exception(); //TODO
 
         Visit visit = visitOptional.get();
 
-        visit.setServiceStatus(ServiceStatus.valueOf(visitPatchRequestDTO.visitStatus));
-        visit.setAcceptationDate(new Date(System.currentTimeMillis()));
+        visit.setServiceStatus(ServiceStatus.valueOf(visitPatchRequestDTO.serviceStatus));
+
+        if (ServiceStatus.ACCEPTED.toString().equals(visitPatchRequestDTO.serviceStatus)) {
+            visit.setAcceptationDate(new Date(System.currentTimeMillis()));
+        }
+
+        visit.setCarDeliveryDate(visitPatchRequestDTO.carDeliveryDate);
         visit.setExpectedStartServiceDate(visitPatchRequestDTO.expectedStartServiceDate);
         visit.setExpectedEndServiceDate(visitPatchRequestDTO.expectedEndServiceDate);
 

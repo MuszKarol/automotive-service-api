@@ -1,6 +1,5 @@
 package pl.KarolMusz.automotiveserviceapi.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import pl.KarolMusz.automotiveserviceapi.model.enums.ServiceStatus;
 
@@ -20,7 +19,7 @@ public class Visit extends BasicEntity{
     @Enumerated(EnumType.STRING)
     private ServiceStatus serviceStatus;
 
-    private Date bookingDate;
+    private Date carDeliveryDate;
     private Date acceptationDate;
     private Date expectedStartServiceDate;
     private Date expectedEndServiceDate;
