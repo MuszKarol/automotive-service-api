@@ -26,7 +26,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{partCode}")
-    public ResponseEntity deletePart(@PathVariable String partCode) {
+    public ResponseEntity<?> deletePart(@PathVariable String partCode) {
         orderService.deletePart(partCode);
         return ResponseEntity.ok().build();
     }

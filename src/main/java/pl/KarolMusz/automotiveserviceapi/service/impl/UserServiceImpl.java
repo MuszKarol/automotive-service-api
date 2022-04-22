@@ -1,7 +1,12 @@
 package pl.KarolMusz.automotiveserviceapi.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.google.gson.Gson;
 import pl.KarolMusz.automotiveserviceapi.dto.*;
 import pl.KarolMusz.automotiveserviceapi.mapper.CarMapper;
 import pl.KarolMusz.automotiveserviceapi.mapper.UserMapper;
@@ -17,7 +22,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
@@ -26,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final ModelRepository modelRepository;
     private final UserMapper userMapper;
     private final CarMapper carMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public UserDTO getUser() {
@@ -55,6 +61,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .email(userDTO.email)
                 .name(userDTO.name)
+                .password(passwordEncoder.encode(userDTO.password))
                 .surname(userDTO.surname)
                 .role(Role.valueOf(userDTO.role))
                 .address(getAddress(userDTO.address))
@@ -129,6 +136,25 @@ public class UserServiceImpl implements UserService {
         carRepository.delete(car);
 
         return getUserDTO(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> userOptional = userRepository.getUserByEmail(email);
+
+        if (userOptional.isEmpty())
+            throw new UsernameNotFoundException("No user found with the submitted e-mail address");
+
+        return userOptional.get();
+    }
+
+    public String createAuthenticationJsonObjectAsString(String userEmail, String token) {
+        Optional<User> userOptional = userRepository.getUserByEmail(userEmail);
+
+        if (userOptional.isEmpty())
+            throw new UsernameNotFoundException("No user found with the submitted e-mail address");
+
+        return new Gson().toJson(userMapper.userToAuthenticationRequestDTO(userOptional.get(), token));
     }
 
     private Address getAddress(AddressDTO addressDTO) {
@@ -207,5 +233,4 @@ public class UserServiceImpl implements UserService {
 
         return carOptional;
     }
-
 }

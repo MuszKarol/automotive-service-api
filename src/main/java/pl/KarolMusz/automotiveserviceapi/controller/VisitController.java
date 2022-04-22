@@ -29,7 +29,7 @@ public class VisitController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<VisitResponseDTO> bookNewVisit(@RequestBody VisitRequestDTO visitRequestDTO) {
+    public ResponseEntity<VisitResponseDTO> saveNewVisit(@RequestBody VisitRequestDTO visitRequestDTO) {
         try {
             return ResponseEntity.ok().body(bookingService.createNewVisit(visitRequestDTO));
         } catch (Exception e) {

@@ -3,9 +3,7 @@ package pl.KarolMusz.automotiveserviceapi.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.KarolMusz.automotiveserviceapi.dto.CarDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.UserCreateRequestDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.UserDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.*;
 import pl.KarolMusz.automotiveserviceapi.service.UserService;
 
 import java.util.UUID;
@@ -16,6 +14,11 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+
+    @PostMapping("/auth")
+    public ResponseEntity<?> authenticateUser() {
+        return  ResponseEntity.ok().build();
+    }
 
     @GetMapping
     public ResponseEntity<UserDTO> getUser() {

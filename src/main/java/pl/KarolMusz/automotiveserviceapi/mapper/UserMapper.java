@@ -2,10 +2,7 @@ package pl.KarolMusz.automotiveserviceapi.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import pl.KarolMusz.automotiveserviceapi.dto.AddressDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.CarDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.ContactDTO;
-import pl.KarolMusz.automotiveserviceapi.dto.UserDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.*;
 import pl.KarolMusz.automotiveserviceapi.model.Address;
 import pl.KarolMusz.automotiveserviceapi.model.ContactDetails;
 import pl.KarolMusz.automotiveserviceapi.model.User;
@@ -35,4 +32,9 @@ public interface UserMapper {
     @Mapping(source = "contactDTO",     target = "contactDetails")
     @Mapping(source = "carDTOs",        target = "carDTOList")
     UserDTO userToUserDTO(User user, AddressDTO addressDTO, ContactDTO contactDTO, List<CarDTO> carDTOs);
+
+    @Mapping(source = "user.id",        target = "userId")
+    @Mapping(source = "user.email",     target = "email")
+    @Mapping(source = "token",          target = "token")
+    AuthenticationResponseDTO userToAuthenticationRequestDTO(User user, String token);
 }
