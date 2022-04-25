@@ -27,10 +27,6 @@ public class Visit extends BasicEntity{
     @OneToOne
     private User client;
 
-    @JoinColumn(nullable = true)
-    @OneToOne
-    private User mechanic;
-
     @OneToOne
     private Car car;
 }

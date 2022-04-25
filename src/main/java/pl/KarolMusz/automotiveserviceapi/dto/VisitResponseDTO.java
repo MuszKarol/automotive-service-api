@@ -13,7 +13,6 @@ public class VisitResponseDTO {
     public String clientEmail;
     public String clientPhoneNumber;
     public String serviceStatus;
-    public String mechanicEmail;
     public String brandName;
     public String modelName;
     public String vinCode;

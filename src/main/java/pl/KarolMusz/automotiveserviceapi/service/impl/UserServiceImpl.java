@@ -1,6 +1,8 @@
 package pl.KarolMusz.automotiveserviceapi.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,10 +35,23 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final CarMapper carMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    public static User getUserFromContext(UserRepository userRepository) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String email= authentication.getName();
+        UUID userId = UUID.fromString(authentication.getDetails().toString());
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if (user.isEmpty() || !user.get().getEmail().equals(email))
+            throw new UsernameNotFoundException("User not found in context!");
+
+        return user.get();
+    }
+
     @Override
     public UserDTO getUser() {
-        //TODO
-        return null;
+        return getUserDTO(getUserFromContext(this.userRepository));
     }
 
     @Override
@@ -74,12 +89,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDTO updateUserDetails(UserDTO userDTO) throws Exception {
-        Optional<User> userOptional = userRepository.getUserByEmail(userDTO.email);
-
-        if (userOptional.isEmpty())
-            throw new Exception();  //TODO
-
-        User user = userOptional.get();
+        User user = getUserFromContext(userRepository);
 
         user.setEmail(userDTO.email);
         user.setName(userDTO.name);
@@ -92,14 +102,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO addUserVehicle(UUID userId, CarDTO carDTO) throws Exception {
-        Optional<User> userOptional = userRepository.findById(userId);
-
-        if (userOptional.isEmpty()) {
-            throw new Exception();  //TODO
-        }
-
-        User user = userOptional.get();
+    public UserDTO addUserVehicle(CarDTO carDTO) throws Exception {
+        User user = getUserFromContext(userRepository);
 
         if(carRepository.getCarByVinCode(carDTO.vinCode).isPresent()) {
             throw new Exception();
@@ -117,18 +121,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO deleteUserVehicle(UUID userId, String vin) throws Exception {
+    public UserDTO deleteUserVehicle(String vin) throws Exception {
+        User user = getUserFromContext(userRepository);
+
         Optional<Car> carOptional = carRepository.getCarByVinCode(vin);
 
         if (carOptional.isEmpty())
             throw new Exception();  //TODO
 
-        Optional<User> userOptional = userRepository.findById(userId);
-
-        if (userOptional.isEmpty())
-            throw new Exception();  //TODO
-
-        User user = userOptional.get();
         Car car = carOptional.get();
 
         user.getListOfCars().remove(carOptional.get());

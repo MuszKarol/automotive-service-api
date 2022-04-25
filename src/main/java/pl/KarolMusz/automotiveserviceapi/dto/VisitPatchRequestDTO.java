@@ -9,5 +9,4 @@ public class VisitPatchRequestDTO {
     public Date carDeliveryDate;
     public Date expectedStartServiceDate;
     public Date expectedEndServiceDate;
-    public String mechanicEmail;
 }

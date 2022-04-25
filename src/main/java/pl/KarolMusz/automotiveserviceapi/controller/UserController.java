@@ -55,20 +55,20 @@ public class UserController {
         }
     }
 
-    @PostMapping("/{id}/vehicle")
-    public ResponseEntity<UserDTO> assignCarToUserAccount(@PathVariable(name = "id") UUID userId, @RequestBody CarDTO carDTO) {
+    @PostMapping("/vehicle")
+    public ResponseEntity<UserDTO> assignCarToUserAccount(@RequestBody CarDTO carDTO) {
         try {
-            return ResponseEntity.ok().body(userService.addUserVehicle(userId, carDTO));
+            return ResponseEntity.ok().body(userService.addUserVehicle(carDTO));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @DeleteMapping("/{user-id}/vehicle/{vehicle-vin}")
-    public ResponseEntity<UserDTO> deleteCarAssignment(@PathVariable("user-id") UUID userId, @PathVariable("vehicle-vin") String vin) {
+    @DeleteMapping("/vehicle/{vehicle-vin}")
+    public ResponseEntity<UserDTO> deleteCarAssignment(@PathVariable("vehicle-vin") String vin) {
         try {
-            return ResponseEntity.ok().body(userService.deleteUserVehicle(userId, vin));
+            return ResponseEntity.ok().body(userService.deleteUserVehicle(vin));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();

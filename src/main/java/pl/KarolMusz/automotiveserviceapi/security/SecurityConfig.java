@@ -50,7 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/visits/new").hasAuthority(Role.CLIENT.toString())
                 .antMatchers(HttpMethod.PATCH, "/visits").hasAuthority(Role.ADMIN.toString())
                 .antMatchers(HttpMethod.GET, "/users").hasAuthority(Role.CLIENT.toString())
-                .antMatchers(HttpMethod.GET, "/users/{id}").hasAuthority(Role.CLIENT.toString())    //TODO - remove
                 .antMatchers(HttpMethod.PUT, "/users").hasAuthority(Role.CLIENT.toString())
                 .antMatchers(HttpMethod.POST, "/users/{id}/vehicle").hasAuthority(Role.CLIENT.toString())
                 .antMatchers(HttpMethod.DELETE, "/users/{user-id}/vehicle/{vehicle-vin}").hasAuthority(Role.CLIENT.toString())

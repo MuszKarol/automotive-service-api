@@ -33,6 +33,7 @@ public class VisitController {
         try {
             return ResponseEntity.ok().body(bookingService.createNewVisit(visitRequestDTO));
         } catch (Exception e) {
+            e.printStackTrace();
             return  ResponseEntity.badRequest().build();
         }
     }
@@ -42,6 +43,7 @@ public class VisitController {
         try {
             return ResponseEntity.ok().body(bookingService.updateVisitStatus(visitPatchRequestDTO));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }

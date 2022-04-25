@@ -11,6 +11,6 @@ public interface UserService {
     UserDTO getUserById(UUID uuid) throws Exception;
     UserDTO createUser(UserCreateRequestDTO userCreateRequestDTO) throws Exception;
     UserDTO updateUserDetails(UserDTO userDTO) throws Exception;
-    UserDTO addUserVehicle(UUID userId, CarDTO carDTO) throws Exception;
-    UserDTO deleteUserVehicle(UUID userId, String vin) throws Exception;
+    UserDTO addUserVehicle(CarDTO carDTO) throws Exception;
+    UserDTO deleteUserVehicle(String vin) throws Exception;
 }

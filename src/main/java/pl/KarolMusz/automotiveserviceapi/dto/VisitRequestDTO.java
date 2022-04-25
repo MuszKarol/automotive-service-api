@@ -8,7 +8,5 @@ public class VisitRequestDTO {
     public Date acceptationDate;
     public Date expectedStartServiceDate;
     public Date expectedEndServiceDate;
-    public String clientEmail;
-    public String mechanicEmail;
     public String vinCode;
 }

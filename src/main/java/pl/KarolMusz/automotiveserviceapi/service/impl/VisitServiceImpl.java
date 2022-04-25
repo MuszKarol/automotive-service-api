@@ -18,7 +18,6 @@ import pl.KarolMusz.automotiveserviceapi.service.VisitService;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Service
@@ -28,17 +27,6 @@ public class VisitServiceImpl implements VisitService {
     private final VisitRepository visitRepository;
     private final CarRepository carRepository;
     private final VisitMapper visitMapper;
-
-    @Override
-    public VisitResponseDTO getVisitDetailsUsingId(UUID visitId) throws Exception {
-
-        Optional<Visit> visitOptional = visitRepository.findById(visitId);
-
-        if (visitOptional.isEmpty())
-            throw new Exception();  //TODO
-
-        return visitMapper.visitToVisitResponseDTO(visitOptional.get());
-    }
 
     @Override
     public List<VisitResponseDTO> getAllVisitsWithStatusUnfinished() {
@@ -55,11 +43,7 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     public VisitResponseDTO createNewVisit(VisitRequestDTO visitRequestDTO) throws Exception {
-        Optional<User> clientOptional = userRepository.getUserByEmail(visitRequestDTO.clientEmail);
-        Optional<User> mechanicOptional = userRepository.getUserByEmail(visitRequestDTO.mechanicEmail);
-
-        if (mechanicOptional.isEmpty() || clientOptional.isEmpty())
-            throw new Exception();  //TODO
+        User client = UserServiceImpl.getUserFromContext(userRepository);
 
         Optional<Car> carOptional = carRepository.getCarByVinCode(visitRequestDTO.vinCode);
 
@@ -67,8 +51,7 @@ public class VisitServiceImpl implements VisitService {
             throw new Exception();  //TODO
 
         Visit visit = Visit.builder()
-                .client(clientOptional.get())
-                .mechanic(mechanicOptional.get()) /*TODO*/
+                .client(client)
                 .car(carOptional.get())
                 .carDeliveryDate(visitRequestDTO.carDeliveryDate)
                 .acceptationDate(visitRequestDTO.acceptationDate)
@@ -99,9 +82,6 @@ public class VisitServiceImpl implements VisitService {
         visit.setCarDeliveryDate(visitPatchRequestDTO.carDeliveryDate);
         visit.setExpectedStartServiceDate(visitPatchRequestDTO.expectedStartServiceDate);
         visit.setExpectedEndServiceDate(visitPatchRequestDTO.expectedEndServiceDate);
-
-        Optional<User> mechanicOptional = userRepository.getUserByEmail(visitPatchRequestDTO.mechanicEmail);    //TODO
-        mechanicOptional.ifPresent(visit::setMechanic);   //TODO
 
         return visitMapper.visitToVisitResponseDTO(visitRepository.save(visit));
     }

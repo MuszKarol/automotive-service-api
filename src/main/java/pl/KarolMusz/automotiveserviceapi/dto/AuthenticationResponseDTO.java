@@ -5,5 +5,6 @@ import java.util.UUID;
 public class AuthenticationResponseDTO {
     public UUID userId;
     public String email;
+    public String role;
     public String token;
 }

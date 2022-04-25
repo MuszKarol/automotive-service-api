@@ -35,6 +35,7 @@ public interface UserMapper {
 
     @Mapping(source = "user.id",        target = "userId")
     @Mapping(source = "user.email",     target = "email")
+    @Mapping(source = "user.role",      target = "role")
     @Mapping(source = "token",          target = "token")
     AuthenticationResponseDTO userToAuthenticationRequestDTO(User user, String token);
 }
