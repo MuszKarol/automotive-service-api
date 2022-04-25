@@ -29,16 +29,29 @@ public class VisitServiceImpl implements VisitService {
     private final VisitMapper visitMapper;
 
     @Override
+    public List<VisitResponseDTO> getAllUserVisits() {
+        List<Visit> visits = visitRepository.getAllByClient(UserServiceImpl.getUserFromContext(userRepository));
+        return visits.stream()
+                .map(visitMapper::visitToVisitResponseDTO)
+                .toList();
+    }
+
+    @Override
     public List<VisitResponseDTO> getAllVisitsWithStatusUnfinished() {
         List<Visit> visits = visitRepository.getAllByServiceStatus(ServiceStatus.ACCEPTED);
         visits.addAll(visitRepository.getAllByServiceStatus(ServiceStatus.ACTIVE));
-        return visits.stream().map(visitMapper::visitToVisitResponseDTO).toList();
+
+        return visits.stream()
+                .map(visitMapper::visitToVisitResponseDTO)
+                .toList();
     }
 
     @Override
     public List<VisitResponseDTO> getAllVisitsWithStatusNew() {
         List<Visit> visits = visitRepository.getAllByServiceStatus(ServiceStatus.NEW);
-        return visits.stream().map(visitMapper::visitToVisitResponseDTO).toList();
+        return visits.stream()
+                .map(visitMapper::visitToVisitResponseDTO)
+                .toList();
     }
 
     @Override

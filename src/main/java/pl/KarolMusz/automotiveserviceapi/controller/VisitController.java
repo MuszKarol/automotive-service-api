@@ -16,22 +16,27 @@ import java.util.List;
 @RestController
 public class VisitController {
 
-    private final VisitService bookingService;
+    private final VisitService visitService;
+
+    @GetMapping("/client")
+    public ResponseEntity<List<VisitResponseDTO>> getAllClientVisits() {
+        return ResponseEntity.ok().body(visitService.getAllUserVisits());
+    }
 
     @GetMapping("/new")
     public ResponseEntity<List<VisitResponseDTO>> getALlNewVisits() {
-        return ResponseEntity.ok().body(bookingService.getAllVisitsWithStatusNew());
+        return ResponseEntity.ok().body(visitService.getAllVisitsWithStatusNew());
     }
 
     @GetMapping("/accepted")
     public ResponseEntity<List<VisitResponseDTO>> getAllAcceptedVisits() {
-        return ResponseEntity.ok().body(bookingService.getAllVisitsWithStatusUnfinished());
+        return ResponseEntity.ok().body(visitService.getAllVisitsWithStatusUnfinished());
     }
 
     @PostMapping("/new")
     public ResponseEntity<VisitResponseDTO> saveNewVisit(@RequestBody VisitRequestDTO visitRequestDTO) {
         try {
-            return ResponseEntity.ok().body(bookingService.createNewVisit(visitRequestDTO));
+            return ResponseEntity.ok().body(visitService.createNewVisit(visitRequestDTO));
         } catch (Exception e) {
             e.printStackTrace();
             return  ResponseEntity.badRequest().build();
@@ -41,7 +46,7 @@ public class VisitController {
     @PatchMapping
     public ResponseEntity<VisitResponseDTO> changeVisitStatus(@RequestBody VisitPatchRequestDTO visitPatchRequestDTO) {
         try {
-            return ResponseEntity.ok().body(bookingService.updateVisitStatus(visitPatchRequestDTO));
+            return ResponseEntity.ok().body(visitService.updateVisitStatus(visitPatchRequestDTO));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();
