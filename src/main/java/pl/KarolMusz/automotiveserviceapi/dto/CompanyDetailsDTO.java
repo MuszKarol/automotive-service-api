@@ -8,5 +8,5 @@ public class CompanyDetailsDTO {
     public String phoneNumber;
     public List<MechanicalServiceDTO> listOfMechanicalServices;
     public AddressDTO address;
-    public List<OperatingHoursDTO> listOfOperatingHours;
+    public List<DayDTO> days;
 }

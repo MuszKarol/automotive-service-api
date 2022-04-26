@@ -2,9 +2,9 @@ package pl.KarolMusz.automotiveserviceapi.security.jwt;
 
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 public class JwtFilterConstants {
     public static String URL = "/users/auth";
     public static String HEADER = "Authorization";

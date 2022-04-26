@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @Entity
 public class Address extends BasicEntity {
-    private String buildingNumber;  //TODO
+    private String buildingNumber;
     private String street;
     private String postalCode;
     private String city;

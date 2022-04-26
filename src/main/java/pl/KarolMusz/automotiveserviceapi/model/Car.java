@@ -3,7 +3,9 @@ package pl.KarolMusz.automotiveserviceapi.model;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 @Getter
 @Setter
@@ -16,7 +18,6 @@ public class Car extends BasicEntity {
     @Column(unique = true, name = "VIN")
     private String vinCode;
 
-    @Column(unique = true)
     private String licensePlate;
 
     @ManyToOne

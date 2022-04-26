@@ -15,6 +15,7 @@ import pl.KarolMusz.automotiveserviceapi.repository.CarRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.VisitRepository;
 import pl.KarolMusz.automotiveserviceapi.service.VisitService;
 
+import javax.persistence.EntityNotFoundException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,13 +56,14 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public VisitResponseDTO createNewVisit(VisitRequestDTO visitRequestDTO) throws Exception {
+    public VisitResponseDTO createNewVisit(VisitRequestDTO visitRequestDTO) throws EntityNotFoundException {
         User client = UserServiceImpl.getUserFromContext(userRepository);
 
         Optional<Car> carOptional = carRepository.getCarByVinCode(visitRequestDTO.vinCode);
 
-        if (carOptional.isEmpty())
-            throw new Exception();  //TODO
+        if (carOptional.isEmpty()) {
+            throw new EntityNotFoundException("Car not found");
+        }
 
         Visit visit = Visit.builder()
                 .client(client)
@@ -78,11 +80,12 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public VisitResponseDTO updateVisitStatus(VisitPatchRequestDTO visitPatchRequestDTO) throws Exception {
+    public VisitResponseDTO updateVisitStatus(VisitPatchRequestDTO visitPatchRequestDTO) throws EntityNotFoundException {
         Optional<Visit> visitOptional = visitRepository.findById(visitPatchRequestDTO.id);
 
-        if (visitOptional.isEmpty())
-            throw new Exception(); //TODO
+        if (visitOptional.isEmpty()) {
+            throw new EntityNotFoundException("Visit not found");
+        }
 
         Visit visit = visitOptional.get();
 

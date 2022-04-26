@@ -16,9 +16,9 @@ public interface CarMapper {
     @Mapping(source = "car.model.brandName",    target = "brandName")
     CarDTO carToCarDTO(Car car);
 
-    @Mapping(source = "carPart.code",       target = "code")
-    @Mapping(source = "carPart.name",       target = "name")
-    @Mapping(source = "carPart.price",      target = "price")
-    @Mapping(source = "carPart.quantity",   target = "quantity")
+    @Mapping(source = "carPart.code",           target = "code")
+    @Mapping(source = "carPart.name",           target = "name")
+    @Mapping(source = "carPart.price",          target = "price")
+    @Mapping(source = "carPart.quantity",       target = "quantity")
     CarPartDTO carPartToCardPartDTO(CarPart carPart);
 }

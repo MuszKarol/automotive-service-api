@@ -17,6 +17,9 @@ import pl.KarolMusz.automotiveserviceapi.model.enums.Role;
 import pl.KarolMusz.automotiveserviceapi.repository.*;
 import pl.KarolMusz.automotiveserviceapi.service.UserService;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +38,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final CarMapper carMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public static User getUserFromContext(UserRepository userRepository) {
+    public static User getUserFromContext(UserRepository userRepository) throws UsernameNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String email= authentication.getName();
@@ -43,23 +46,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         Optional<User> user = userRepository.findById(userId);
 
-        if (user.isEmpty() || !user.get().getEmail().equals(email))
-            throw new UsernameNotFoundException("User not found in context!");
+        if (user.isEmpty() || !user.get().getEmail().equals(email)) {
+            throw new UsernameNotFoundException("User not found");
+        }
 
         return user.get();
     }
 
     @Override
-    public UserDTO getUser() {
+    public UserDTO getUser() throws UsernameNotFoundException {
         return getUserDTO(getUserFromContext(this.userRepository));
     }
 
     @Override
-    public UserDTO getUserById(UUID uuid) throws Exception {
+    public UserDTO getUserById(UUID uuid) throws EntityNotFoundException {
         Optional<User> userOptional = userRepository.findById(uuid);
 
-        if (userOptional.isEmpty())
-            throw new Exception();  //TODO
+        if (userOptional.isEmpty()) {
+            throw new EntityNotFoundException("User not found");
+        }
 
         User user = userOptional.get();
 
@@ -67,11 +72,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO createUser(UserCreateRequestDTO userDTO) throws Exception {
+    public UserDTO createUser(UserCreateRequestDTO userDTO) throws EntityExistsException {
         Optional<User> userOptional = userRepository.getUserByEmail(userDTO.email);
 
-        if (userOptional.isPresent())
-            throw new Exception();
+        if (userOptional.isPresent()) {
+            throw new EntityExistsException("User already exists");
+        }
 
         User user = User.builder()
                 .email(userDTO.email)
@@ -88,7 +94,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO updateUserDetails(UserDTO userDTO) throws Exception {
+    public UserDTO updateUserDetails(UserDTO userDTO) throws UsernameNotFoundException {
         User user = getUserFromContext(userRepository);
 
         user.setEmail(userDTO.email);
@@ -102,17 +108,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO addUserVehicle(CarDTO carDTO) throws Exception {
+    public UserDTO addUserVehicle(CarDTO carDTO)
+            throws UsernameNotFoundException, EntityExistsException, EntityNotFoundException
+    {
         User user = getUserFromContext(userRepository);
 
         if(carRepository.getCarByVinCode(carDTO.vinCode).isPresent()) {
-            throw new Exception();
+            throw new EntityExistsException("Car with VIN number already exists");
         }
 
         Optional<Car> carOptional = getCar(carDTO);
 
-        if (carOptional.isEmpty()){
-            throw new Exception(); //TODO
+        if (carOptional.isEmpty()) {
+            throw new EntityNotFoundException("Car not found");
         }
 
         user.getListOfCars().add(carRepository.save(carOptional.get()));
@@ -121,13 +129,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO deleteUserVehicle(String vin) throws Exception {
+    public UserDTO deleteUserVehicle(String vin) throws EntityNotFoundException {
         User user = getUserFromContext(userRepository);
 
         Optional<Car> carOptional = carRepository.getCarByVinCode(vin);
 
-        if (carOptional.isEmpty())
-            throw new Exception();  //TODO
+        if (carOptional.isEmpty()) {
+            throw new EntityNotFoundException("Car not found");
+        }
 
         Car car = carOptional.get();
 
@@ -142,8 +151,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> userOptional = userRepository.getUserByEmail(email);
 
-        if (userOptional.isEmpty())
+        if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException("No user found with the submitted e-mail address");
+        }
 
         return userOptional.get();
     }
@@ -151,8 +161,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public String createAuthenticationJsonObjectAsString(String userEmail, String token) {
         Optional<User> userOptional = userRepository.getUserByEmail(userEmail);
 
-        if (userOptional.isEmpty())
+        if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException("No user found with the submitted e-mail address");
+        }
 
         return new Gson().toJson(userMapper.userToAuthenticationRequestDTO(userOptional.get(), token));
     }

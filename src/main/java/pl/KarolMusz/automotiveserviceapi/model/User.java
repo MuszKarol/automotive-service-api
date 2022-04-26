@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import pl.KarolMusz.automotiveserviceapi.model.enums.Role;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,7 +31,6 @@ public class User extends BasicEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @JoinColumn(nullable = true)
     @OneToOne
     private Address address;
 

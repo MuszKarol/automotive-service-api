@@ -8,6 +8,7 @@ import pl.KarolMusz.automotiveserviceapi.model.CarPart;
 import pl.KarolMusz.automotiveserviceapi.repository.CarPartRepository;
 import pl.KarolMusz.automotiveserviceapi.service.OrderService;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +29,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public CarPartDTO saveCarPart(CarPartDTO carPartDTO) {
-
         Optional<CarPart> carPartOptional = carPartRepository.getCarPartByCode(carPartDTO.code);
 
         CarPart carPart;
@@ -47,14 +47,21 @@ public class OrderServiceImpl implements OrderService {
             carPart.setName(carPartDTO.name);
             carPart.setPrice(carPartDTO.price);
             carPart.setQuantity(carPart.getQuantity() + carPartDTO.quantity);
+
+            carPartRepository.save(carPart);
         }
 
         return carMapper.carPartToCardPartDTO(carPart);
     }
 
     @Override
-    public void deletePart(String partCode) {
+    public void deletePart(String partCode) throws EntityNotFoundException {
         Optional<CarPart> carPartOptional = carPartRepository.getCarPartByCode(partCode);
-        carPartOptional.ifPresent(carPartRepository::delete);
+
+        if (carPartOptional.isEmpty()) {
+            throw new EntityNotFoundException("Car part not found");
+        }
+
+        carPartRepository.delete(carPartOptional.get());
     }
 }

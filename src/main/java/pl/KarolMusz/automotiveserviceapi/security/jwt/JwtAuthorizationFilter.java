@@ -33,41 +33,73 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String header = request.getHeader(JwtFilterConstants.HEADER);
 
-        if ((header == null) || !header.startsWith(TOKEN_PREFIX)) {
+        if (isTokenPresent(header)) {
             chain.doFilter(request, response);
-        }
-        else {
-            Optional<UsernamePasswordAuthenticationToken> authenticationTokenOptional = getAuthenticationToken(header);
+        } else {
+            Optional<UsernamePasswordAuthenticationToken> tokenOptional = authorize(header);
 
-            if (authenticationTokenOptional.isEmpty())
+            if (tokenOptional.isEmpty())
                 throw new IOException();
 
-            SecurityContextHolder.getContext().setAuthentication(authenticationTokenOptional.get());
+            saveToken(tokenOptional.get());
 
             chain.doFilter(request, response);
         }
     }
 
-    private Optional<UsernamePasswordAuthenticationToken> getAuthenticationToken(String requestHeader) {
+    private void saveToken(UsernamePasswordAuthenticationToken token) {
+        SecurityContextHolder.getContext().setAuthentication(token);
+    }
+
+    private boolean isTokenPresent(String header) {
+        return ((header == null) || !header.startsWith(TOKEN_PREFIX));
+    }
+
+    private Optional<UsernamePasswordAuthenticationToken> authorize(String requestHeader) {
         Optional<UsernamePasswordAuthenticationToken> tokenOptional = Optional.empty();
 
         if (!requestHeader.isEmpty()) {
-            DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(this.secretKey.getBytes()))
-                                    .build()
-                                    .verify(requestHeader.replace(TOKEN_PREFIX, ""));
+            DecodedJWT decodedJWT = decodeToken(requestHeader);
 
             String email = decodedJWT.getSubject();
             String role = decodedJWT.getClaim(ROLE).asString();
             String userId = decodedJWT.getClaim(USER_ID).asString();
 
-            if (!email.isEmpty()) {
-                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, null, authorities);
-                token.setDetails(UUID.fromString(userId));
-                tokenOptional = Optional.of(token);
-            }
+            tokenOptional = getToken(email, role, userId);
         }
 
         return tokenOptional;
+    }
+
+    private Optional<UsernamePasswordAuthenticationToken> getToken(String email, String role, String userId) {
+        if (!email.isEmpty()) {
+            return Optional.of(stringsToToken(email, role, userId));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private UsernamePasswordAuthenticationToken stringsToToken(String email, String role, String userId) {
+        UsernamePasswordAuthenticationToken token;
+
+        token = new UsernamePasswordAuthenticationToken(
+                email,
+                null,
+                List.of(new SimpleGrantedAuthority(role))
+        );
+
+        token.setDetails(UUID.fromString(userId));
+
+        return token;
+    }
+
+    private DecodedJWT decodeToken(String requestHeader) {
+        return JWT.require(Algorithm.HMAC512(this.secretKey.getBytes()))
+                .build()
+                .verify(removeTokenPrefix(requestHeader));
+    }
+
+    private String removeTokenPrefix(String requestHeader) {
+        return requestHeader.replace(TOKEN_PREFIX, "");
     }
 }

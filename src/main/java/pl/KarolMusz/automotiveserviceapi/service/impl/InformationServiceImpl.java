@@ -7,13 +7,14 @@ import pl.KarolMusz.automotiveserviceapi.mapper.CompanyMapper;
 import pl.KarolMusz.automotiveserviceapi.model.Address;
 import pl.KarolMusz.automotiveserviceapi.model.Company;
 import pl.KarolMusz.automotiveserviceapi.model.MechanicalService;
-import pl.KarolMusz.automotiveserviceapi.model.OperatingHours;
+import pl.KarolMusz.automotiveserviceapi.model.Day;
 import pl.KarolMusz.automotiveserviceapi.repository.AddressRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.CompanyRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.MechanicalServiceRepository;
-import pl.KarolMusz.automotiveserviceapi.repository.OperatingHoursRepository;
+import pl.KarolMusz.automotiveserviceapi.repository.DayRepository;
 import pl.KarolMusz.automotiveserviceapi.service.InformationService;
 
+import javax.persistence.NoResultException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -26,21 +27,23 @@ public class InformationServiceImpl implements InformationService {
 
     private final AddressRepository addressRepository;
     private final MechanicalServiceRepository mechanicalServiceRepository;
-    private final OperatingHoursRepository operatingHoursRepository;
+    private final DayRepository dayRepository;
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
 
     @Override
-    public CompanyDetailsDTO getCompanyDetails() throws Exception {
+    public CompanyDetailsDTO getCompanyDetails() throws NoResultException {
         Optional<Company> companyOptional = companyRepository.getCompanyByLatestModificationTimestamp();
 
-        if(companyOptional.isEmpty()) throw new Exception(); //TODO
+        if(companyOptional.isEmpty()) {
+            throw new NoResultException("Company information not found");
+        }
 
         Company company = companyOptional.get();
 
         AddressDTO companyAddressDTO = getCompanyAddressDTO(company);
         List<MechanicalServiceDTO> servicesList = getMechanicalServicesDTO(company);
-        List<OperatingHoursDTO> operatingHoursDTOList = getOperatingHoursDTOS(company);
+        List<DayDTO> operatingHoursDTOList = getListOfDayDto(company);
 
         return companyMapper.companyToCompanyDTO(company, servicesList, companyAddressDTO, operatingHoursDTOList);
     }
@@ -52,14 +55,14 @@ public class InformationServiceImpl implements InformationService {
         Company company = createCompany(companyDetailsDTO, address);
         companyRepository.save(company);
 
-        List<OperatingHours> operatingHoursList = createOperatingHoursList(companyDetailsDTO.listOfOperatingHours, company);
-        operatingHoursRepository.saveAll(operatingHoursList);
+        List<Day> dayList = createOperatingHoursList(companyDetailsDTO.days, company);
+        dayRepository.saveAll(dayList);
 
         List<MechanicalService> mechanicalServices = createMechanicalServices(companyDetailsDTO.listOfMechanicalServices, company);
         mechanicalServiceRepository.saveAll(mechanicalServices);
 
         return companyMapper.companyToCompanyDTO(company, this.getMechanicalServicesDTO(company),
-                this.getCompanyAddressDTO(company), companyDetailsDTO.listOfOperatingHours);
+                this.getCompanyAddressDTO(company), companyDetailsDTO.days);
     }
 
     private Company createCompany(CompanyDetailsDTO requestDTO, Address address) {
@@ -78,8 +81,8 @@ public class InformationServiceImpl implements InformationService {
                 .toList());
     }
 
-    private List<OperatingHours> createOperatingHoursList(List<OperatingHoursDTO> listOfOperatingHours, Company company) {
-        return operatingHoursRepository.saveAll(listOfOperatingHours.stream()
+    private List<Day> createOperatingHoursList(List<DayDTO> listOfOperatingHours, Company company) {
+        return dayRepository.saveAll(listOfOperatingHours.stream()
                 .map(operatingHours -> companyMapper.operatingHoursDTOToOperatingHours(operatingHours, company))
                 .toList());
     }
@@ -108,9 +111,9 @@ public class InformationServiceImpl implements InformationService {
                 .toList();
     }
 
-    private List<OperatingHoursDTO> getOperatingHoursDTOS(Company company) {
-        return operatingHoursRepository.getAllByCompany(company).stream()
-                .map(companyMapper::operatingHoursToOperatingHoursDTO)
+    private List<DayDTO> getListOfDayDto(Company company) {
+        return dayRepository.getAllByCompany(company).stream()
+                .map(companyMapper::dayToDayDTO)
                 .toList();
     }
 }

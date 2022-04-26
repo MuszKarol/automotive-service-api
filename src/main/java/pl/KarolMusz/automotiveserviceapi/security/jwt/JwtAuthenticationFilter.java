@@ -38,13 +38,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            AuthenticationRequestDTO authDTO = new ObjectMapper().readValue(request.getInputStream(), AuthenticationRequestDTO.class);
+            AuthenticationRequestDTO authDTO = getAuthenticationDTO(request);
+            return getAuthentication(authDTO);
 
-            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                        authDTO.email,
-                        authDTO.password,
-                        new ArrayList<>()
-                    ));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -52,10 +48,40 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
-        String userEmail = ((User) authResult.getPrincipal()).getUsername();
-        String role = ((User) authResult.getPrincipal()).getRole().toString();
-        String userId = ((User) authResult.getPrincipal()).getId().toString();
+        String userEmail = getPrincipal(authResult).getUsername();
+        String role = getPrincipal(authResult).getRole().toString();
+        String userId = getPrincipal(authResult).getId().toString();
 
+        String authDtoAsString = createToken(userEmail, role, userId);
+
+        responseWriteAuthenticationDTO(response, authDtoAsString);
+    }
+
+    private void responseWriteAuthenticationDTO(HttpServletResponse response, String authDtoAsString) throws IOException {
+        response.setContentType("application/json");
+        response.getWriter().write(authDtoAsString);
+        response.getWriter().flush();
+    }
+
+    private Authentication getAuthentication(AuthenticationRequestDTO authDTO) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    authDTO.email,
+                    authDTO.password,
+                    new ArrayList<>()
+                )
+            );
+    }
+
+    private AuthenticationRequestDTO getAuthenticationDTO(HttpServletRequest request) throws IOException {
+        return new ObjectMapper().readValue(request.getInputStream(), AuthenticationRequestDTO.class);
+    }
+
+    private User getPrincipal(Authentication authResult) {
+        return (User) authResult.getPrincipal();
+    }
+
+    private String createToken(String userEmail, String role, String userId) {
         String token = JWT.create()
                 .withSubject(userEmail)
                 .withClaim(ROLE, role)
@@ -63,11 +89,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(setTokenExpirationTime())
                 .sign(Algorithm.HMAC512(this.secretKey.getBytes()));
 
-        String authDtoAsString = userService.createAuthenticationJsonObjectAsString(userEmail, token);
-
-        response.setContentType("application/json");
-        response.getWriter().write(authDtoAsString);
-        response.getWriter().flush();
+        return userService.createAuthenticationJsonObjectAsString(userEmail, token);
     }
 
     private Date setTokenExpirationTime() {

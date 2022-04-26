@@ -8,6 +8,7 @@ import pl.KarolMusz.automotiveserviceapi.dto.VisitRequestDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.VisitResponseDTO;
 import pl.KarolMusz.automotiveserviceapi.service.VisitService;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 
@@ -37,6 +38,9 @@ public class VisitController {
     public ResponseEntity<VisitResponseDTO> saveNewVisit(@RequestBody VisitRequestDTO visitRequestDTO) {
         try {
             return ResponseEntity.ok().body(visitService.createNewVisit(visitRequestDTO));
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             e.printStackTrace();
             return  ResponseEntity.badRequest().build();
@@ -47,9 +51,12 @@ public class VisitController {
     public ResponseEntity<VisitResponseDTO> changeVisitStatus(@RequestBody VisitPatchRequestDTO visitPatchRequestDTO) {
         try {
             return ResponseEntity.ok().body(visitService.updateVisitStatus(visitPatchRequestDTO));
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return  ResponseEntity.badRequest().build();
         }
     }
 

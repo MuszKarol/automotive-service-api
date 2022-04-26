@@ -24,5 +24,4 @@ public class BasicEntity implements Serializable {
     @Type(type = "org.hibernate.type.UUIDCharType")
     @Column(name = "id", nullable = false, updatable = false, length = 36)
     private UUID id;
-
 }

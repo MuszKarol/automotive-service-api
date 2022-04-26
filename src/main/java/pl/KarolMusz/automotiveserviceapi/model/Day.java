@@ -13,8 +13,8 @@ import javax.persistence.ManyToOne;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "operating_hours")
-public class OperatingHours extends BasicEntity {
+@Entity(name = "opening_hours")
+public class Day extends BasicEntity {
     private String dayName;
     private String openingHour;
     private String closingHour;

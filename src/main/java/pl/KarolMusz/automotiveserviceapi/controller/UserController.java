@@ -2,10 +2,12 @@ package pl.KarolMusz.automotiveserviceapi.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import pl.KarolMusz.automotiveserviceapi.dto.*;
 import pl.KarolMusz.automotiveserviceapi.service.UserService;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -22,13 +24,23 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<UserDTO> getUser() {
-        return ResponseEntity.ok().body(userService.getUser());
+        try {
+            return ResponseEntity.ok().body(userService.getUser());
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable(name = "id") UUID uuid) {
         try {
             return ResponseEntity.ok().body(userService.getUserById(uuid));
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
@@ -49,6 +61,9 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUserDetails(@RequestBody UserDTO userDTO) {
         try {
             return ResponseEntity.ok().body(userService.updateUserDetails(userDTO));
+        } catch (UsernameNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
@@ -59,6 +74,9 @@ public class UserController {
     public ResponseEntity<UserDTO> assignCarToUserAccount(@RequestBody CarDTO carDTO) {
         try {
             return ResponseEntity.ok().body(userService.addUserVehicle(carDTO));
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
@@ -69,6 +87,9 @@ public class UserController {
     public ResponseEntity<UserDTO> deleteCarAssignment(@PathVariable("vehicle-vin") String vin) {
         try {
             return ResponseEntity.ok().body(userService.deleteUserVehicle(vin));
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();

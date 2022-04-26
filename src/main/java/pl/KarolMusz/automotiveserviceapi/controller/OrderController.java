@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.KarolMusz.automotiveserviceapi.dto.CarPartDTO;
 import pl.KarolMusz.automotiveserviceapi.service.OrderService;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @AllArgsConstructor
@@ -27,7 +28,15 @@ public class OrderController {
 
     @DeleteMapping("/{partCode}")
     public ResponseEntity<?> deletePart(@PathVariable String partCode) {
-        orderService.deletePart(partCode);
-        return ResponseEntity.ok().build();
+        try {
+            orderService.deletePart(partCode);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

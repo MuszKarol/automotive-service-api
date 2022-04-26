@@ -22,8 +22,8 @@ import pl.KarolMusz.automotiveserviceapi.service.impl.UserServiceImpl;
 import java.util.List;
 
 @AllArgsConstructor
-@Configuration
 @EnableWebSecurity
+@Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserServiceImpl userService;
@@ -32,6 +32,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public static BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
+
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.applyPermitDefaultValues();
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE"));
+
+        configurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+        return configurationSource;
     }
 
     @Override
@@ -52,11 +65,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH, "/visits").hasAuthority(Role.ADMIN.toString())
                 .antMatchers(HttpMethod.GET, "/users").hasAuthority(Role.CLIENT.toString())
                 .antMatchers(HttpMethod.PUT, "/users").hasAuthority(Role.CLIENT.toString())
-                .antMatchers(HttpMethod.POST, "/users/{id}/vehicle").hasAuthority(Role.CLIENT.toString())
-                .antMatchers(HttpMethod.DELETE, "/users/{user-id}/vehicle/{vehicle-vin}").hasAuthority(Role.CLIENT.toString())
+                .antMatchers(HttpMethod.POST, "/users/{id}/vehicle")
+                    .hasAuthority(Role.CLIENT.toString())
+                .antMatchers(HttpMethod.DELETE, "/users/{user-id}/vehicle/{vehicle-vin}")
+                    .hasAuthority(Role.CLIENT.toString())
                 .antMatchers(HttpMethod.GET, "/order/parts").hasAuthority(Role.ADMIN.toString())
                 .antMatchers(HttpMethod.POST, "/order/parts").hasAuthority(Role.ADMIN.toString())
-                .antMatchers(HttpMethod.DELETE, "/order/parts/{partCode}").hasAuthority(Role.ADMIN.toString())
+                .antMatchers(HttpMethod.DELETE, "/order/parts/{partCode}")
+                    .hasAuthority(Role.ADMIN.toString())
                 .anyRequest().authenticated()
             .and()
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), userService, requestConstants.SECRET_KEY))
@@ -66,19 +82,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
-
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.applyPermitDefaultValues();
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
-
-        configurationSource.registerCorsConfiguration("/**", corsConfiguration);
-
-        return configurationSource;
+        authenticationManagerBuilder
+                .userDetailsService(userService)
+                .passwordEncoder(bCryptPasswordEncoder());
     }
 }

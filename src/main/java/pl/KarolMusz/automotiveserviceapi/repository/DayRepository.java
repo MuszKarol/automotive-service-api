@@ -2,11 +2,11 @@ package pl.KarolMusz.automotiveserviceapi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.KarolMusz.automotiveserviceapi.model.Company;
-import pl.KarolMusz.automotiveserviceapi.model.OperatingHours;
+import pl.KarolMusz.automotiveserviceapi.model.Day;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface OperatingHoursRepository extends JpaRepository<OperatingHours, UUID> {
-    List<OperatingHours> getAllByCompany(Company company);
+public interface DayRepository extends JpaRepository<Day, UUID> {
+    List<Day> getAllByCompany(Company company);
 }
