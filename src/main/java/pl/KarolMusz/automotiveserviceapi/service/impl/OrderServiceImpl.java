@@ -23,8 +23,8 @@ public class OrderServiceImpl implements OrderService {
     public List<CarPartDTO> getAllCarParts() {
         return carPartRepository.findAll()
                 .stream()
-                    .map(carMapper::carPartToCardPartDTO)
-                    .toList();
+                .map(carMapper::carPartToCardPartDTO)
+                .toList();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<CarPart> carPartOptional = carPartRepository.getCarPartByCode(carPartDTO.code);
 
         CarPart carPart;
-        if(carPartOptional.isEmpty()) {
+        if (carPartOptional.isEmpty()) {
             carPart = CarPart.builder()
                     .code(carPartDTO.code)
                     .name(carPartDTO.name)
@@ -41,8 +41,7 @@ public class OrderServiceImpl implements OrderService {
                     .build();
 
             carPartRepository.save(carPart);
-        }
-        else {
+        } else {
             carPart = carPartOptional.get();
             carPart.setName(carPartDTO.name);
             carPart.setPrice(carPartDTO.price);

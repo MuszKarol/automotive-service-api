@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import pl.KarolMusz.automotiveserviceapi.dto.*;
+import pl.KarolMusz.automotiveserviceapi.dto.CarDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.UserCreateRequestDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.UserDTO;
 import pl.KarolMusz.automotiveserviceapi.service.UserService;
 
 import javax.persistence.EntityNotFoundException;
@@ -19,7 +21,7 @@ public class UserController {
 
     @PostMapping("/auth")
     public ResponseEntity<?> authenticateUser() {
-        return  ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping

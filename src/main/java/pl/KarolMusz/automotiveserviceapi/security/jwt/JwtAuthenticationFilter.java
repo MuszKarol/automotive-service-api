@@ -66,11 +66,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private Authentication getAuthentication(AuthenticationRequestDTO authDTO) {
         return authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                    authDTO.email,
-                    authDTO.password,
-                    new ArrayList<>()
+                        authDTO.email,
+                        authDTO.password,
+                        new ArrayList<>()
                 )
-            );
+        );
     }
 
     private AuthenticationRequestDTO getAuthenticationDTO(HttpServletRequest request) throws IOException {

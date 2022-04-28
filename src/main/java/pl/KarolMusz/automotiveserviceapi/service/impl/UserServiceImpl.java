@@ -1,5 +1,6 @@
 package pl.KarolMusz.automotiveserviceapi.service.impl;
 
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.google.gson.Gson;
 import pl.KarolMusz.automotiveserviceapi.dto.*;
 import pl.KarolMusz.automotiveserviceapi.mapper.CarMapper;
 import pl.KarolMusz.automotiveserviceapi.mapper.UserMapper;
@@ -19,7 +19,6 @@ import pl.KarolMusz.automotiveserviceapi.service.UserService;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +40,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public static User getUserFromContext(UserRepository userRepository) throws UsernameNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String email= authentication.getName();
+        String email = authentication.getName();
         UUID userId = UUID.fromString(authentication.getDetails().toString());
 
         Optional<User> user = userRepository.findById(userId);
@@ -109,11 +108,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDTO addUserVehicle(CarDTO carDTO)
-            throws UsernameNotFoundException, EntityExistsException, EntityNotFoundException
-    {
+            throws UsernameNotFoundException, EntityExistsException, EntityNotFoundException {
         User user = getUserFromContext(userRepository);
 
-        if(carRepository.getCarByVinCode(carDTO.vinCode).isPresent()) {
+        if (carRepository.getCarByVinCode(carDTO.vinCode).isPresent()) {
             throw new EntityExistsException("Car with VIN number already exists");
         }
 
@@ -225,19 +223,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     .build();
 
             modelRepository.save(model);
-        }
-        else {
+        } else {
             model = modelOptional.get();
         }
 
         carOptional = carRepository.getCarByVinCodeAndModel(carDTO.vinCode, model);
+
+        System.out.println("test");
+        System.out.println(carDTO.version);
+        System.out.println(carDTO.engine);
+        System.out.println(carDTO.carRegistrationDate);
 
         if (carOptional.isEmpty()) {
             Car car = Car.builder()
                     .model(model)
                     .licensePlate(carDTO.licensePlate)
                     .vinCode(carDTO.vinCode)
+                    .carRegistrationDate(carDTO.carRegistrationDate)
+                    .version(carDTO.version)
+                    .engine(carDTO.engine)
                     .build();
+
+            System.out.println("test2");
 
             carOptional = Optional.of(car);
         }

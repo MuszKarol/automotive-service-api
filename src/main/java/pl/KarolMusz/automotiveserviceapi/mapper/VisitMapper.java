@@ -19,6 +19,10 @@ public interface VisitMapper {
     @Mapping(source = "visit.client.contactDetails.phoneNumber",    target = "clientPhoneNumber")
     @Mapping(source = "visit.car.model.brandName",                  target = "brandName")
     @Mapping(source = "visit.car.model.modelName",                  target = "modelName")
+    @Mapping(source = "visit.car.version",                          target = "version")
+    @Mapping(source = "visit.car.engine",                           target = "engine")
     @Mapping(source = "visit.car.vinCode",                          target = "vinCode")
+    @Mapping(source = "visit.car.licensePlate",                     target = "licensePlateNumbers")
+    @Mapping(source = "visit.car.carRegistrationDate",              target = "carRegistrationDate")
     VisitResponseDTO visitToVisitResponseDTO(Visit visit);
 }

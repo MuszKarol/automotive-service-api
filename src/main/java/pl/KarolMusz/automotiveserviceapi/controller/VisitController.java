@@ -43,7 +43,7 @@ public class VisitController {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             e.printStackTrace();
-            return  ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -56,7 +56,7 @@ public class VisitController {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             e.printStackTrace();
-            return  ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 

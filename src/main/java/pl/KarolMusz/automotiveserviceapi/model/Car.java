@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -19,6 +20,10 @@ public class Car extends BasicEntity {
     private String vinCode;
 
     private String licensePlate;
+    private Date carRegistrationDate;
+
+    private String version;
+    private String engine;
 
     @ManyToOne
     private Model model;

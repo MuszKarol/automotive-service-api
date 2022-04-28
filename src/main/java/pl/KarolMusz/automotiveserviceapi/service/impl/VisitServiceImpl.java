@@ -6,12 +6,12 @@ import pl.KarolMusz.automotiveserviceapi.dto.VisitPatchRequestDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.VisitRequestDTO;
 import pl.KarolMusz.automotiveserviceapi.dto.VisitResponseDTO;
 import pl.KarolMusz.automotiveserviceapi.mapper.VisitMapper;
-import pl.KarolMusz.automotiveserviceapi.model.User;
 import pl.KarolMusz.automotiveserviceapi.model.Car;
+import pl.KarolMusz.automotiveserviceapi.model.User;
 import pl.KarolMusz.automotiveserviceapi.model.Visit;
 import pl.KarolMusz.automotiveserviceapi.model.enums.ServiceStatus;
-import pl.KarolMusz.automotiveserviceapi.repository.UserRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.CarRepository;
+import pl.KarolMusz.automotiveserviceapi.repository.UserRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.VisitRepository;
 import pl.KarolMusz.automotiveserviceapi.service.VisitService;
 
@@ -32,7 +32,8 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public List<VisitResponseDTO> getAllUserVisits() {
         List<Visit> visits = visitRepository.getAllByClient(UserServiceImpl.getUserFromContext(userRepository));
-        return visits.stream()
+
+        return checkEndOfServiceDate(visits).stream()
                 .map(visitMapper::visitToVisitResponseDTO)
                 .toList();
     }
@@ -42,7 +43,7 @@ public class VisitServiceImpl implements VisitService {
         List<Visit> visits = visitRepository.getAllByServiceStatus(ServiceStatus.ACCEPTED);
         visits.addAll(visitRepository.getAllByServiceStatus(ServiceStatus.ACTIVE));
 
-        return visits.stream()
+        return checkEndOfServiceDate(visits).stream()
                 .map(visitMapper::visitToVisitResponseDTO)
                 .toList();
     }
@@ -82,23 +83,60 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public VisitResponseDTO updateVisitStatus(VisitPatchRequestDTO visitPatchRequestDTO) throws EntityNotFoundException {
         Optional<Visit> visitOptional = visitRepository.findById(visitPatchRequestDTO.id);
+        User client = UserServiceImpl.getUserFromContext(userRepository);
+        Visit visit;
 
         if (visitOptional.isEmpty()) {
             throw new EntityNotFoundException("Visit not found");
         }
 
-        Visit visit = visitOptional.get();
-
-        visit.setServiceStatus(ServiceStatus.valueOf(visitPatchRequestDTO.serviceStatus));
-
-        if (ServiceStatus.ACCEPTED.toString().equals(visitPatchRequestDTO.serviceStatus)) {
-            visit.setAcceptationDate(new Date(System.currentTimeMillis()));
+        if (visitOptional.get().getClient().equals(client)) {
+            visit = modifyVisitStatus(visitPatchRequestDTO, visitOptional.get());
+        } else {
+            visit = updateVisit(visitPatchRequestDTO, visitOptional.get());
         }
 
-        visit.setCarDeliveryDate(visitPatchRequestDTO.carDeliveryDate);
-        visit.setExpectedStartServiceDate(visitPatchRequestDTO.expectedStartServiceDate);
-        visit.setExpectedEndServiceDate(visitPatchRequestDTO.expectedEndServiceDate);
-
         return visitMapper.visitToVisitResponseDTO(visitRepository.save(visit));
+    }
+
+    private Visit modifyVisitStatus(VisitPatchRequestDTO visitPatchRequestDTO, Visit visit) {
+        if (visitPatchRequestDTO.serviceStatus.equals("REJECTED")) {
+            return updateVisit(visitPatchRequestDTO, visit);
+        } else {
+            return visit;
+        }
+    }
+
+    private Visit updateVisit(VisitPatchRequestDTO visitPatchDTO, Visit visit) {
+        visit.setServiceStatus(ServiceStatus.valueOf(visitPatchDTO.serviceStatus));
+
+        if (ServiceStatus.ACCEPTED.toString().equals(visitPatchDTO.serviceStatus)) {
+            visit.setAcceptationDate(new Date(System.currentTimeMillis()));
+        }
+        if (visitPatchDTO.carDeliveryDate != null) {
+            visit.setCarDeliveryDate(visitPatchDTO.carDeliveryDate);
+        }
+        if (visitPatchDTO.expectedStartServiceDate != null) {
+            visit.setExpectedStartServiceDate(visitPatchDTO.expectedStartServiceDate);
+        }
+        if (visitPatchDTO.expectedEndServiceDate != null) {
+            visit.setExpectedEndServiceDate(visitPatchDTO.expectedEndServiceDate);
+        }
+
+        return visit;
+    }
+
+    private List<Visit> checkEndOfServiceDate(List<Visit> visits) {
+        Date currentDate = new Date(System.currentTimeMillis());
+
+        for (Visit visit : visits) {
+            if ((visit.getExpectedEndServiceDate() != null) &&
+                    (visit.getExpectedEndServiceDate().compareTo(currentDate) < 0)) {
+                visit.setExpectedEndServiceDate(currentDate);
+                visitRepository.save(visit);
+            }
+        }
+
+        return visits;
     }
 }

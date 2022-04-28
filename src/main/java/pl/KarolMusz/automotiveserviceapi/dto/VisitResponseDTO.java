@@ -15,5 +15,9 @@ public class VisitResponseDTO {
     public String serviceStatus;
     public String brandName;
     public String modelName;
+    public String version;
+    public String engine;
     public String vinCode;
+    public String licensePlateNumbers;
+    public String carRegistrationDate;
 }

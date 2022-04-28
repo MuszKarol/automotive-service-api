@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/visits/new").hasAuthority(Role.ADMIN.toString())
                 .antMatchers(HttpMethod.GET, "/visits/accepted").hasAuthority(Role.ADMIN.toString())
                 .antMatchers(HttpMethod.POST, "/visits/new").hasAuthority(Role.CLIENT.toString())
-                .antMatchers(HttpMethod.PATCH, "/visits").hasAuthority(Role.ADMIN.toString())
+                .antMatchers(HttpMethod.PATCH, "/visits").hasAnyAuthority(Role.CLIENT.toString(), Role.ADMIN.toString())
                 .antMatchers(HttpMethod.GET, "/users").hasAuthority(Role.CLIENT.toString())
                 .antMatchers(HttpMethod.PUT, "/users").hasAuthority(Role.CLIENT.toString())
                 .antMatchers(HttpMethod.POST, "/users/{id}/vehicle")

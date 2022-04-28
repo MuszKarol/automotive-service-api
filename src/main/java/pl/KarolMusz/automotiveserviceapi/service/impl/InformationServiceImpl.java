@@ -2,16 +2,19 @@ package pl.KarolMusz.automotiveserviceapi.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.KarolMusz.automotiveserviceapi.dto.*;
+import pl.KarolMusz.automotiveserviceapi.dto.AddressDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.CompanyDetailsDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.DayDTO;
+import pl.KarolMusz.automotiveserviceapi.dto.MechanicalServiceDTO;
 import pl.KarolMusz.automotiveserviceapi.mapper.CompanyMapper;
 import pl.KarolMusz.automotiveserviceapi.model.Address;
 import pl.KarolMusz.automotiveserviceapi.model.Company;
-import pl.KarolMusz.automotiveserviceapi.model.MechanicalService;
 import pl.KarolMusz.automotiveserviceapi.model.Day;
+import pl.KarolMusz.automotiveserviceapi.model.MechanicalService;
 import pl.KarolMusz.automotiveserviceapi.repository.AddressRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.CompanyRepository;
-import pl.KarolMusz.automotiveserviceapi.repository.MechanicalServiceRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.DayRepository;
+import pl.KarolMusz.automotiveserviceapi.repository.MechanicalServiceRepository;
 import pl.KarolMusz.automotiveserviceapi.service.InformationService;
 
 import javax.persistence.NoResultException;
@@ -35,7 +38,7 @@ public class InformationServiceImpl implements InformationService {
     public CompanyDetailsDTO getCompanyDetails() throws NoResultException {
         Optional<Company> companyOptional = companyRepository.getCompanyByLatestModificationTimestamp();
 
-        if(companyOptional.isEmpty()) {
+        if (companyOptional.isEmpty()) {
             throw new NoResultException("Company information not found");
         }
 
@@ -93,12 +96,12 @@ public class InformationServiceImpl implements InformationService {
 
         return addressOptional.orElseGet(() -> addressRepository.save(
                 Address.builder()
-                .buildingNumber(addressDTO.buildingNumber)
-                .street(addressDTO.street)
-                .city(addressDTO.city)
-                .postalCode(addressDTO.postalCode)
-                .country(addressDTO.country)
-                .build()));
+                        .buildingNumber(addressDTO.buildingNumber)
+                        .street(addressDTO.street)
+                        .city(addressDTO.city)
+                        .postalCode(addressDTO.postalCode)
+                        .country(addressDTO.country)
+                        .build()));
     }
 
     private AddressDTO getCompanyAddressDTO(Company company) {
