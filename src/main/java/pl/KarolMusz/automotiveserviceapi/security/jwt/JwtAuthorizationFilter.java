@@ -16,12 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static pl.KarolMusz.automotiveserviceapi.security.jwt.JwtFilterConstants.*;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-
     private final String secretKey;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, String secretKey) {
@@ -63,23 +61,22 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
             String email = decodedJWT.getSubject();
             String role = decodedJWT.getClaim(ROLE).asString();
-            String userId = decodedJWT.getClaim(USER_ID).asString();
 
-            tokenOptional = getToken(email, role, userId);
+            tokenOptional = getToken(email, role);
         }
 
         return tokenOptional;
     }
 
-    private Optional<UsernamePasswordAuthenticationToken> getToken(String email, String role, String userId) {
+    private Optional<UsernamePasswordAuthenticationToken> getToken(String email, String role) {
         if (!email.isEmpty()) {
-            return Optional.of(stringsToToken(email, role, userId));
+            return Optional.of(stringsToToken(email, role));
         } else {
             return Optional.empty();
         }
     }
 
-    private UsernamePasswordAuthenticationToken stringsToToken(String email, String role, String userId) {
+    private UsernamePasswordAuthenticationToken stringsToToken(String email, String role) {
         UsernamePasswordAuthenticationToken token;
 
         token = new UsernamePasswordAuthenticationToken(
@@ -87,8 +84,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 null,
                 List.of(new SimpleGrantedAuthority(role))
         );
-
-        token.setDetails(UUID.fromString(userId));
 
         return token;
     }

@@ -10,7 +10,6 @@ public class JwtFilterConstants {
     public static String HEADER = "Authorization";
     public static String TOKEN_PREFIX = "Bearer ";
     public static String ROLE = "role";
-    public static String USER_ID = "userId";
     public static int TIME = 1_800_000;
 
     @Value("${secret.key}")

@@ -50,9 +50,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         String userEmail = getPrincipal(authResult).getUsername();
         String role = getPrincipal(authResult).getRole().toString();
-        String userId = getPrincipal(authResult).getId().toString();
 
-        String authDtoAsString = createToken(userEmail, role, userId);
+        String authDtoAsString = createToken(userEmail, role);
 
         responseWriteAuthenticationDTO(response, authDtoAsString);
     }
@@ -81,11 +80,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return (User) authResult.getPrincipal();
     }
 
-    private String createToken(String userEmail, String role, String userId) {
+    private String createToken(String userEmail, String role) {
         String token = JWT.create()
                 .withSubject(userEmail)
                 .withClaim(ROLE, role)
-                .withClaim(USER_ID, userId)
                 .withExpiresAt(setTokenExpirationTime())
                 .sign(Algorithm.HMAC512(this.secretKey.getBytes()));
 

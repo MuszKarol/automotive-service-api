@@ -39,11 +39,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     public static User getUserFromContext(UserRepository userRepository) throws UsernameNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         String email = authentication.getName();
-        UUID userId = UUID.fromString(authentication.getDetails().toString());
 
-        Optional<User> user = userRepository.findById(userId);
+        Optional<User> user = userRepository.getUserByEmail(email);
 
         if (user.isEmpty() || !user.get().getEmail().equals(email)) {
             throw new UsernameNotFoundException("User not found");
@@ -138,9 +136,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         Car car = carOptional.get();
 
-        user.getListOfCars().remove(carOptional.get());
+        user.getListOfCars().remove(car);
         userRepository.save(user);
-        carRepository.delete(car);
+//        carRepository.delete(car);
 
         return getUserDTO(user);
     }
@@ -229,12 +227,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         carOptional = carRepository.getCarByVinCodeAndModel(carDTO.vinCode, model);
 
-        System.out.println("test");
-        System.out.println(carDTO.version);
-        System.out.println(carDTO.engine);
-        System.out.println(carDTO.carRegistrationDate);
-
         if (carOptional.isEmpty()) {
+
             Car car = Car.builder()
                     .model(model)
                     .licensePlate(carDTO.licensePlate)
@@ -243,8 +237,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     .version(carDTO.version)
                     .engine(carDTO.engine)
                     .build();
-
-            System.out.println("test2");
 
             carOptional = Optional.of(car);
         }
