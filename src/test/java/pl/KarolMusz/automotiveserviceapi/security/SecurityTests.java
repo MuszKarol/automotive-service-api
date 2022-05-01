@@ -1,12 +1,8 @@
 package pl.KarolMusz.automotiveserviceapi.security;
 
 import com.google.gson.JsonObject;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

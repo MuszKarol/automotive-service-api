@@ -9,7 +9,6 @@ import pl.KarolMusz.automotiveserviceapi.model.CarPart;
 
 @Mapper
 public interface CarMapper {
-
     @Mapping(source = "car.vinCode",                target = "vinCode")
     @Mapping(source = "car.licensePlate",           target = "licensePlate")
     @Mapping(source = "car.carRegistrationDate",    target = "carRegistrationDate")

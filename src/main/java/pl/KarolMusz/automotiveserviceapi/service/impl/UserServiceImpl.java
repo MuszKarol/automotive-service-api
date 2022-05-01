@@ -105,21 +105,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO addUserVehicle(CarDTO carDTO)
-            throws UsernameNotFoundException, EntityExistsException, EntityNotFoundException {
+    public UserDTO addUserVehicle(CarDTO carDTO) throws UsernameNotFoundException, EntityExistsException {
         User user = getUserFromContext(userRepository);
+        Optional<Car> carOptional = findUserCar(user, carDTO.vinCode);
 
-        if (carRepository.getCarByVinCode(carDTO.vinCode).isPresent()) {
-            throw new EntityExistsException("Car with VIN number already exists");
+        if (carOptional.isPresent()) {
+            throw new EntityExistsException("Car already exists");
         }
 
-        Optional<Car> carOptional = getCar(carDTO);
-
-        if (carOptional.isEmpty()) {
-            throw new EntityNotFoundException("Car not found");
-        }
-
-        user.getListOfCars().add(carRepository.save(carOptional.get()));
+        Car car = getCar(carDTO);
+        user.getListOfCars().add(carRepository.save(car));
 
         return getUserDTO(userRepository.save(user));
     }
@@ -128,7 +123,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDTO deleteUserVehicle(String vin) throws EntityNotFoundException {
         User user = getUserFromContext(userRepository);
 
-        Optional<Car> carOptional = carRepository.getCarByVinCode(vin);
+        Optional<Car> carOptional = findUserCar(user, vin);
 
         if (carOptional.isEmpty()) {
             throw new EntityNotFoundException("Car not found");
@@ -138,7 +133,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         user.getListOfCars().remove(car);
         userRepository.save(user);
-//        carRepository.delete(car);
 
         return getUserDTO(user);
     }
@@ -162,6 +156,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         return new Gson().toJson(userMapper.userToAuthenticationRequestDTO(userOptional.get(), token));
+    }
+
+    private Optional<Car> findUserCar(User user, String vin) {
+        return user.getListOfCars().stream()
+                .filter(car -> car.getVinCode().equals(vin))
+                .findFirst();
     }
 
     private Address getAddress(AddressDTO addressDTO) {
@@ -208,10 +208,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 getCarDTOs(user));
     }
 
-    private Optional<Car> getCar(CarDTO carDTO) {
-        Optional<Car> carOptional;
-        Optional<Model> modelOptional = modelRepository.getModelByBrandNameAndModelName(carDTO.brandName, carDTO.modelName);
+    private Car getCar(CarDTO carDTO) {
+        Model model = getModel(carDTO);
 
+        return Car.builder()
+                .model(model)
+                .licensePlate(carDTO.licensePlate)
+                .vinCode(carDTO.vinCode)
+                .carRegistrationDate(carDTO.carRegistrationDate)
+                .version(carDTO.version)
+                .engine(carDTO.engine)
+                .build();
+    }
+
+    private Model getModel(CarDTO carDTO) {
+        Optional<Model> modelOptional = modelRepository.getModelByBrandNameAndModelName(
+                carDTO.brandName,
+                carDTO.modelName
+        );
         Model model;
 
         if (modelOptional.isEmpty()) {
@@ -225,22 +239,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             model = modelOptional.get();
         }
 
-        carOptional = carRepository.getCarByVinCodeAndModel(carDTO.vinCode, model);
-
-        if (carOptional.isEmpty()) {
-
-            Car car = Car.builder()
-                    .model(model)
-                    .licensePlate(carDTO.licensePlate)
-                    .vinCode(carDTO.vinCode)
-                    .carRegistrationDate(carDTO.carRegistrationDate)
-                    .version(carDTO.version)
-                    .engine(carDTO.engine)
-                    .build();
-
-            carOptional = Optional.of(car);
-        }
-
-        return carOptional;
+        return model;
     }
 }

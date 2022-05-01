@@ -10,7 +10,6 @@ import pl.KarolMusz.automotiveserviceapi.model.Car;
 import pl.KarolMusz.automotiveserviceapi.model.User;
 import pl.KarolMusz.automotiveserviceapi.model.Visit;
 import pl.KarolMusz.automotiveserviceapi.model.enums.ServiceStatus;
-import pl.KarolMusz.automotiveserviceapi.repository.CarRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.UserRepository;
 import pl.KarolMusz.automotiveserviceapi.repository.VisitRepository;
 import pl.KarolMusz.automotiveserviceapi.service.VisitService;
@@ -26,7 +25,6 @@ public class VisitServiceImpl implements VisitService {
 
     private final UserRepository userRepository;
     private final VisitRepository visitRepository;
-    private final CarRepository carRepository;
     private final VisitMapper visitMapper;
 
     @Override
@@ -60,7 +58,7 @@ public class VisitServiceImpl implements VisitService {
     public VisitResponseDTO createNewVisit(VisitRequestDTO visitRequestDTO) throws EntityNotFoundException {
         User client = UserServiceImpl.getUserFromContext(userRepository);
 
-        Optional<Car> carOptional = carRepository.getCarByVinCode(visitRequestDTO.vinCode);
+        Optional<Car> carOptional = getUserCar(visitRequestDTO, client);
 
         if (carOptional.isEmpty()) {
             throw new EntityNotFoundException("Car not found");
@@ -97,6 +95,12 @@ public class VisitServiceImpl implements VisitService {
         }
 
         return visitMapper.visitToVisitResponseDTO(visitRepository.save(visit));
+    }
+
+    private Optional<Car> getUserCar(VisitRequestDTO visitRequestDTO, User client) {
+        return client.getListOfCars().stream()
+                .filter(x -> x.getVinCode().equals(visitRequestDTO.vinCode))
+                .findFirst();
     }
 
     private Visit modifyVisitStatus(VisitPatchRequestDTO visitPatchRequestDTO, Visit visit) {

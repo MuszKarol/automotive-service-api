@@ -76,9 +76,6 @@ public class UserController {
     public ResponseEntity<UserDTO> assignCarToUserAccount(@RequestBody CarDTO carDTO) {
         try {
             return ResponseEntity.ok().body(userService.addUserVehicle(carDTO));
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace();
-            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();

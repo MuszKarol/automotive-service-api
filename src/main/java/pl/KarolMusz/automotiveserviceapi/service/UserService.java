@@ -14,6 +14,6 @@ public interface UserService {
     UserDTO getUserById(UUID uuid) throws EntityNotFoundException;
     UserDTO createUser(UserCreateRequestDTO userCreateRequestDTO) throws EntityExistsException;
     UserDTO updateUserDetails(UserDTO userDTO) throws UsernameNotFoundException;
-    UserDTO addUserVehicle(CarDTO carDTO) throws UsernameNotFoundException, EntityExistsException, EntityNotFoundException;
+    UserDTO addUserVehicle(CarDTO carDTO) throws UsernameNotFoundException, EntityExistsException;
     UserDTO deleteUserVehicle(String vin) throws EntityNotFoundException;
 }
