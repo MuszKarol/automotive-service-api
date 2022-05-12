@@ -69,25 +69,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO createUser(UserCreateRequestDTO userDTO) throws EntityExistsException {
-        Optional<User> userOptional = userRepository.getUserByEmail(userDTO.email);
+    public UserDTO createClient(UserCreateRequestDTO userCreateRequestDTO) throws EntityExistsException {
+        return getUserDTO(createUser(userCreateRequestDTO, Role.CLIENT));
+    }
 
-        if (userOptional.isPresent()) {
-            throw new EntityExistsException("User already exists");
-        }
-
-        User user = User.builder()
-                .email(userDTO.email)
-                .name(userDTO.name)
-                .password(passwordEncoder.encode(userDTO.password))
-                .surname(userDTO.surname)
-                .role(Role.valueOf(userDTO.role))
-                .address(getAddress(userDTO.address))
-                .contactDetails(getContactDetails(userDTO.contactDetails))
-                .listOfCars(new ArrayList<>())
-                .build();
-
-        return getUserDTO(userRepository.save(user));
+    @Override
+    public UserDTO createAdmin(UserCreateRequestDTO userCreateRequestDTO) throws EntityExistsException {
+        return getUserDTO(createUser(userCreateRequestDTO, Role.ADMIN));
     }
 
     @Override
@@ -156,6 +144,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         return new Gson().toJson(userMapper.userToAuthenticationRequestDTO(userOptional.get(), token));
+    }
+
+    private User createUser(UserCreateRequestDTO userDTO, Role role) {
+        Optional<User> userOptional = userRepository.getUserByEmail(userDTO.email);
+
+        if (userOptional.isPresent()) {
+            throw new EntityExistsException("User already exists");
+        }
+
+        User user = User.builder()
+                .email(userDTO.email)
+                .name(userDTO.name)
+                .password(passwordEncoder.encode(userDTO.password))
+                .surname(userDTO.surname)
+                .role(role)
+                .address(getAddress(userDTO.address))
+                .contactDetails(getContactDetails(userDTO.contactDetails))
+                .listOfCars(new ArrayList<>())
+                .build();
+
+        return userRepository.save(user);
     }
 
     private Optional<Car> findUserCar(User user, String vin) {

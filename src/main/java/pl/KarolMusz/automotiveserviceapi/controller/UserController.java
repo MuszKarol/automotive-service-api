@@ -49,10 +49,20 @@ public class UserController {
         }
     }
 
-    @PostMapping("/new")
-    public ResponseEntity<UserDTO> createNewUser(@RequestBody UserCreateRequestDTO userCreateRequestDTO) {
+    @PostMapping("/new/client")
+    public ResponseEntity<UserDTO> createNewClient(@RequestBody UserCreateRequestDTO userCreateRequestDTO) {
         try {
-            return ResponseEntity.ok().body(userService.createUser(userCreateRequestDTO));
+            return ResponseEntity.ok().body(userService.createClient(userCreateRequestDTO));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/new/admin")
+    public ResponseEntity<UserDTO> createNewAdmin(@RequestBody UserCreateRequestDTO userCreateRequestDTO) {
+        try {
+            return ResponseEntity.ok().body(userService.createAdmin(userCreateRequestDTO));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();

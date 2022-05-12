@@ -16,6 +16,7 @@ import pl.KarolMusz.automotiveserviceapi.service.VisitService;
 
 import javax.persistence.EntityNotFoundException;
 import java.sql.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,7 @@ public class VisitServiceImpl implements VisitService {
 
         return checkEndOfServiceDate(visits).stream()
                 .map(visitMapper::visitToVisitResponseDTO)
+                .sorted(Comparator.comparing(visit -> visit.carDeliveryDate))
                 .toList();
     }
 
@@ -43,14 +45,17 @@ public class VisitServiceImpl implements VisitService {
 
         return checkEndOfServiceDate(visits).stream()
                 .map(visitMapper::visitToVisitResponseDTO)
+                .sorted(Comparator.comparing(visit -> visit.carDeliveryDate))
                 .toList();
     }
 
     @Override
     public List<VisitResponseDTO> getAllVisitsWithStatusNew() {
         List<Visit> visits = visitRepository.getAllByServiceStatus(ServiceStatus.NEW);
+
         return visits.stream()
                 .map(visitMapper::visitToVisitResponseDTO)
+                .sorted(Comparator.comparing(visit -> visit.carDeliveryDate))
                 .toList();
     }
 

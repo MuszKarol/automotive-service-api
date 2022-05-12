@@ -12,7 +12,8 @@ import java.util.UUID;
 public interface UserService {
     UserDTO getUser() throws UsernameNotFoundException;
     UserDTO getUserById(UUID uuid) throws EntityNotFoundException;
-    UserDTO createUser(UserCreateRequestDTO userCreateRequestDTO) throws EntityExistsException;
+    UserDTO createClient(UserCreateRequestDTO userCreateRequestDTO) throws EntityExistsException;
+    UserDTO createAdmin(UserCreateRequestDTO userCreateRequestDTO) throws EntityExistsException;
     UserDTO updateUserDetails(UserDTO userDTO) throws UsernameNotFoundException;
     UserDTO addUserVehicle(CarDTO carDTO) throws UsernameNotFoundException, EntityExistsException;
     UserDTO deleteUserVehicle(String vin) throws EntityNotFoundException;

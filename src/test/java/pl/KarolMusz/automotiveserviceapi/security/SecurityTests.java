@@ -48,7 +48,7 @@ public class SecurityTests {
         userJson.add("contactDetails", contactDetails);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/users/new")
+                        MockMvcRequestBuilders.post("/users/new/client")
                                 .content(userJson.toString())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -58,6 +58,7 @@ public class SecurityTests {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @Order(2)
     public void createAdminTest() throws Exception {
         JsonObject userJson = new JsonObject();
@@ -82,7 +83,7 @@ public class SecurityTests {
         userJson.add("contactDetails", contactDetails);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/users/new")
+                        MockMvcRequestBuilders.post("/users/new/admin")
                                 .content(userJson.toString())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
